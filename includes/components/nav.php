@@ -17,6 +17,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span></button>
 					<a class="navbar-brand" href="#"><span>Meeting</span> Organiser</a>
+                    <a href="./user-profile.php"><span>User</span> Profile</a>
 				</div>
 			</div><!-- /.container-fluid -->
 		</nav>
