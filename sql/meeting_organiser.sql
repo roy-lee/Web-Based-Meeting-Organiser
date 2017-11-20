@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.6.5.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 18, 2017 at 02:52 PM
--- Server version: 10.1.26-MariaDB
--- PHP Version: 7.1.9
+-- Generation Time: Nov 20, 2017 at 04:02 AM
+-- Server version: 10.1.21-MariaDB
+-- PHP Version: 7.1.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -83,13 +81,19 @@ CREATE TABLE `participants` (
 
 CREATE TABLE `users` (
   `userid` int(11) NOT NULL,
-  `email` varchar(150) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
   `username` varchar(150) NOT NULL,
   `password` varchar(150) NOT NULL,
-  `accountState` varchar(10) DEFAULT NULL,
-  `firstname` varchar(255) DEFAULT NULL,
-  `lastname` varchar(255) DEFAULT NULL
+  `accountState` varchar(5) NOT NULL,
+  `fullname` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`userid`, `email`, `username`, `password`, `accountState`, `fullname`) VALUES
+(1, 'leejoel95@gmail.com', 'leejoel', '$2y$10$GZbwwD0Jhzqw.4mGLAmrYeZ39b4tL3aND8aWqZq.qPE/tJ/4zAKKm', 'no', 'lee joel');
 
 --
 -- Indexes for dumped tables
@@ -138,19 +142,16 @@ ALTER TABLE `users`
 --
 ALTER TABLE `meeting`
   MODIFY `meetingid` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 -- AUTO_INCREMENT for table `meetingdates`
 --
 ALTER TABLE `meetingdates`
   MODIFY `meetingdateid` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT;
-
+  MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- Constraints for dumped tables
 --
@@ -180,7 +181,6 @@ ALTER TABLE `meetingdates`
 ALTER TABLE `participants`
   ADD CONSTRAINT `fk_participants_meeting1` FOREIGN KEY (`meeting_meetingid`) REFERENCES `meeting` (`meetingid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_participants_user1` FOREIGN KEY (`user_userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
