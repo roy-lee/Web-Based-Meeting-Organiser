@@ -17,7 +17,6 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span></button>
 					<a class="navbar-brand" href="#"><span>Meeting</span> Organiser</a>
-                    <a href="./user-profile.php"><span>User</span> Profile</a>
 				</div>
 			</div><!-- /.container-fluid -->
 		</nav>
@@ -40,17 +39,18 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 				</div>
 			</form>
 			<ul class="nav menu">
-				<li class="active"><a href="index.php"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
-				<li><a href="widgets.html"><em class="fa fa-calendar">&nbsp;</em> Widgets</a></li>
-				<li><a href="event-details.php"><em class="fa fa-calendar">&nbsp;</em> Event Details</a></li>
-				<li><a href="charts.html"><em class="fa fa-bar-chart">&nbsp;</em> Charts</a></li>
+				<li class="<?php if($currentPage =='index'){echo 'active';}?>"><a href="index.php"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
+				<!-- <li><a href="widgets.html"><em class="fa fa-calendar">&nbsp;</em> Widgets</a></li> -->
+				<li class="<?php if($currentPage =='event'){echo 'active';}?>"><a href="event-details.php"><em class="fa fa-calendar">&nbsp;</em> Event Details</a></li>
+				<!-- <li><a href="charts.html"><em class="fa fa-bar-chart">&nbsp;</em> Charts</a></li>
 				<li><a href="buttons.html"><em class="fa fa-hand-pointer-o">&nbsp;</em> Buttons</a></li>
 				<li><a href="forms.html"><em class="fa fa-pencil-square-o">&nbsp;</em> Forms</a></li>
 				<li><a href="tables.html"><em class="fa fa-table">&nbsp;</em> Tables</a></li>
 				<li><a href="panels.html"><em class="fa fa-clone">&nbsp;</em> Alerts &amp; Panels</a></li>
-				<li><a href="icons.html"><em class="fa fa-star-o">&nbsp;</em> Icons</a></li>
+				<li><a href="icons.html"><em class="fa fa-star-o">&nbsp;</em> Icons</a></li> -->
+        <li class="<?php if($currentPage =='userProfile'){echo 'active';}?>"><a href="./user-profile.php?id=<?php echo $_SESSION['userID'] ?>"><em class="fa fa-user">&nbsp;</em>User Profile</a></li>
 				<li><a href="logout.php"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
-				<li class="parent "><a data-toggle="collapse" href="#sub-item-1">
+				<!-- <li class="parent "><a data-toggle="collapse" href="#sub-item-1">
 					<em class="fa fa-file-o">&nbsp;</em> Pages <span data-toggle="collapse" href="#sub-item-1" class="icon pull-right"><i class="fa fa-plus"></i></span>
 					</a>
 					<ul class="children collapse" id="sub-item-1">
@@ -67,6 +67,6 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 							Error 404
 						</a></li>
 					</ul>
-				</li>
+				</li> -->
 			</ul>
 		</div><!--/.sidebar-->

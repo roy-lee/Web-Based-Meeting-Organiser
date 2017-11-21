@@ -22,5 +22,6 @@
 		<![endif]-->
 	</head>
 	<body>
+		<?php include('config.php'); ?>
 		<!-- Navbar -->
 		<?php include('components/nav.php'); ?>
