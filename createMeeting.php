@@ -7,10 +7,10 @@ require_once 'config.php';
 $organiserusername = $_SESSION['username'];
 $userid = "";
 
-/* --------------- 
- * 
- * On page run 
- * 
+/* ---------------
+ *
+ * On page run
+ *
  * ---------------  */
 
 function onPageRun() {
@@ -35,7 +35,7 @@ function getUserId() {
             // Store result
             $stmt->store_result();
 
-            // 
+            //
             if ($stmt->num_rows == 1) {
                 // Bind result variables
                 $stmt->bind_result($userid);
@@ -51,17 +51,17 @@ function getUserId() {
     }
 }
 
-/* --------------- 
- * 
- * On page run 
- * 
+/* ---------------
+ *
+ * On page run
+ *
  * ---------------  */
 
 
-/* --------------- 
- * 
- * Post Validation 
- * 
+/* ---------------
+ *
+ * Post Validation
+ *
  * ---------------  */
 // Variables
 $meetingtitle = $meetingvenue = $isallday = $datestart = $dateend = $venue = $organiserid = $repeattype = "";
@@ -180,7 +180,7 @@ function validateOnPost() {
 
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Create a Meeting</h1>      
+            <h1 class="page-header">Create a Meeting</h1>
         </div>
     </div><!--/.row-->
 
