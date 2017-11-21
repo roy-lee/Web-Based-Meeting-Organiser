@@ -59,7 +59,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $password_err = "Please enter a password.";
     } elseif(strlen(trim($_POST['password'])) < 8){
         $password_err = "Password must have at least 8 characters.";
-    } 
+    }
     elseif (strlen(trim($_POST['password']))> 20 )
     {
         $password_err = "Password must not exceed 20 characters.";
@@ -105,7 +105,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $confirm_password = trim($_POST['confirm_password']);
         }
     }
-    
+
     // Validate full name
     if(empty(trim($_POST["full_name"]))){
         $full_name_err = 'Please enter your full name.';
@@ -124,10 +124,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $full_name = trim($_POST['full_name']);
         }
     }
-    
+
     if(empty(trim($_POST["email"]))){
         $confirm_password_err = 'Please enter your email.';
-    } 
+    }
     elseif (strlen($_POST['email']) > 255)
     {
         $email_err = "Email must not exceed 255 characters.";
@@ -179,17 +179,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $param_fullname = $full_name;
             $param_email = $email;
             $param_state = "no";
-            
+
             $subject = 'Verification for 1004 Account';
             $message = "Hi $full_name,<br>
             Your account has been successfully registered.<br>
             You must now validate your account by clicking the link below<br>
-            http://localhost/ICT1004/Project2_roy/verification.php?id=$username&mode=verify<br><br>
+            http://localhost/verification.php?id=$username&mode=verify<br><br>
             If you did not register for this account, click the link below<br>
-            http://localhost/ICT1004/Project2_roy/verification.php?id=$username&mode=delete<br>
+            http://localhost/verification.php?id=$username&mode=delete<br>
             Thanks.";
             $result = send_email($email,$subject,$message,false);
-            
+
             if ($result == true)
             {
                 // Attempt to execute the prepared statement
@@ -197,9 +197,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     // Redirect to login page
                     header("location: verification.php");
                 } else{
-                    echo "Something went wrong. Please try again later.";
+                    echo "Something went wrong while inserting user account details. Please try again later.";
                 }
-                
+
             }
             else {
                 $email_err = "Unable to send email to this email address.";

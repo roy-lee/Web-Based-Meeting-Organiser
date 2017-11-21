@@ -25,7 +25,7 @@ include("includes/header.inc.php");
         <div class="panel panel-teal panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-shopping-cart color-blue"></em>
             <div class="large">120</div>
-            <div class="text-muted">New Orders</div>
+            <div class="text-muted">Upcoming Events</div>
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@ include("includes/header.inc.php");
         <div class="panel panel-blue panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-comments color-orange"></em>
             <div class="large">52</div>
-            <div class="text-muted">Comments</div>
+            <div class="text-muted">Events so far</div>
           </div>
         </div>
       </div>
@@ -41,7 +41,6 @@ include("includes/header.inc.php");
         <div class="panel panel-orange panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-users color-teal"></em>
             <div class="large">24</div>
-            <div class="text-muted">New Users</div>
           </div>
         </div>
       </div>
@@ -49,7 +48,9 @@ include("includes/header.inc.php");
   </div>
 
   <div class="row">
-    <div class="col-md-6">
+
+    <div class="col-md-12">
+    <div class="col-md-7 no-padding">
       <div class="panel panel-default ">
         <div class="panel-heading">
           Timeline of Events
@@ -103,10 +104,14 @@ include("includes/header.inc.php");
                 </div>
               </div>
             </li>
-
           </ul>
         </div>
       </div>
-    </div><!--/.col-->
+    </div><!--/.timeline of events -->
+
+
+
+
+
 
 <?php include("includes/footer.inc.php"); ?>

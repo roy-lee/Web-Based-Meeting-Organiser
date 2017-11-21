@@ -42,7 +42,10 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 				<li class="<?php if($currentPage =='index'){echo 'active';}?>"><a href="index.php"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
 				<!-- <li><a href="widgets.html"><em class="fa fa-calendar">&nbsp;</em> Widgets</a></li> -->
 				<li class="<?php if($currentPage =='event'){echo 'active';}?>"><a href="event-details.php"><em class="fa fa-calendar">&nbsp;</em> Event Details</a></li>
+        <li><a href="createMeeting.php"><em class="fa fa-dashboard">&nbsp;</em> Create Meeting</a></li>
 				<!-- <li><a href="charts.html"><em class="fa fa-bar-chart">&nbsp;</em> Charts</a></li>
+				<li><a href="event-details.php"><em class="fa fa-calendar">&nbsp;</em> Event Details</a></li>
+				<li><a href="charts.html"><em class="fa fa-bar-chart">&nbsp;</em> Charts</a></li>
 				<li><a href="buttons.html"><em class="fa fa-hand-pointer-o">&nbsp;</em> Buttons</a></li>
 				<li><a href="forms.html"><em class="fa fa-pencil-square-o">&nbsp;</em> Forms</a></li>
 				<li><a href="tables.html"><em class="fa fa-table">&nbsp;</em> Tables</a></li>
