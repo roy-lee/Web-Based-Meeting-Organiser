@@ -104,6 +104,7 @@ else {
     <title>User Profile - Meeting Organiser</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+    <script src="js/fields_validation.js" type="application/javascript"></script>
     <style type="text/css">
         body{ font: 14px sans-serif; }
         .form-group > .btn {width: 49%; display: inline-block; }
@@ -115,7 +116,7 @@ else {
             <div class="login-panel panel panel-default">
               <div class="panel-heading">Your Profile</div>
               <div class="panel-body">
-                <form role="form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <form role="form" name="profile" onsubmit="return validate_profile()" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                   <fieldset>
                     <div class="form-group <?php echo (!empty($full_name_err)) ? 'has-error' : ''; ?>">
                         <label>Full Name:<sup>*</sup></label>

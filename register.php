@@ -97,6 +97,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <title>Sign Up - Meeting Organiser</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+    <script src="js/fields_validation.js" type="application/javascript"></script>
     <style type="text/css">
         body{ font: 14px sans-serif; }
         .form-group > .btn {width: 49%; display: inline-block; }
@@ -108,7 +109,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="login-panel panel panel-default">
               <div class="panel-heading">Sign Up</div>
               <div class="panel-body">
-                <form role="form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <form role="form" name="register" onsubmit="return validate_register()" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                   <fieldset>
                     <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
                         <label>Username:<sup>*</sup></label>

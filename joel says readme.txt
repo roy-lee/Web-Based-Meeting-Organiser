@@ -9,3 +9,6 @@ new: fields_validation (includes validation for most fields, used by register.ph
 *my send email function set to true to skip imap validation as it now seems to be unstable and fails the validation,
 gmail seems to be able to send out the email to fake e-mail addresses,
 hence i guess we just stick to javascript and php email validation for the time being
+
+____________
+new javascript validation in js folder

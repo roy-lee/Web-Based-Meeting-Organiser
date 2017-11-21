@@ -88,7 +88,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta charset="UTF-8">
     <title>Login - Meeting Organiser</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-		<link href="css/styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <script src="js/fields_validation.js" type="application/javascript"></script>
     <style type="text/css">
         body{ font: 14px sans-serif; }
     </style>
@@ -99,23 +100,23 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         				<div class="login-panel panel panel-default">
         					<div class="panel-heading">Log in</div>
         					<div class="panel-body">
-        						<form role="form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        						<form role="form" name="login" onsubmit="return validate_login()" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         							<fieldset>
                         <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
                             <label>Username:<sup>*</sup></label>
-                            <input type="text" autofocus="" placeholder="username" name="username"class="form-control" value="<?php echo $username; ?>">
+                            <input type="text" autofocus="" placeholder="username" name="username"class="form-control" value="<?php echo $username; ?>" required>
                             <span class="help-block"><?php echo $username_err; ?></span>
                         </div>
 
                         <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
                             <label>Password:<sup>*</sup></label>
-                            <input type="password" name="password" class="form-control">
+                            <input type="password" name="password" class="form-control" required>
                             <span class="help-block"><?php echo $password_err; ?></span>
                         </div>
                         <div class="form-group">
                             <label>Role:</label>
-                            <input type="radio" name="role" value="participant" checked='checked'> Participant
-                            <input type="radio" name="role" value="organiser"> Organiser
+                            <input type="radio" name="role" id="participant" value="participant" checked='checked'><label for="participant">Participant</label>
+                            <input type="radio" name="role" id="organiser" value="organiser"><label for="organiser">Organiser</label>
                         </div>
                         <div class="form-group">
                             <input type="submit" class="btn btn-primary" value="Log In">

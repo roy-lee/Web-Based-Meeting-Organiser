@@ -95,16 +95,20 @@ function validate_password()
     {
         $err = "Password must not exceed 20 characters.";
     }else{
-        $alpha = $numer = false;
+        $alpha = $numer = $invalid_symbols = false;
         $pass_buff = $_POST['new_password'];
         for ($i=0; $i<strlen($pass_buff);$i++)
         {
-            if ($alpha && $numer)
+            if ($alpha && $numer && $invalid_symbols)
             {
                 break;
             }
             else
             {
+                if(preg_match('/[\'"&`()|<> ]/', $pass_buff[$i]))
+                {
+                    $invalid_symbols = true;
+                }
                 if(ctype_alpha($pass_buff[$i]))
                 {
                     $alpha = true;
@@ -115,9 +119,9 @@ function validate_password()
                 }
             }
         }
-        if (!$alpha || !$numer)
+        if (!$alpha || !$numer || $invalid_symbols)
         {
-            $err = "Password must have at least an alphabet and a number.";
+            $err = "Password must have at least an alphabet and a number but cannot contain certain symbols.";
         }
     }
     return $err;
@@ -204,11 +208,5 @@ function validate_username($mysqli)
     }
     return $err;
 }
-
-
-
-
-
-
 
 ?>
