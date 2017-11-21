@@ -41,18 +41,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err) && empty($full_name_err) && empty($email_err)){
 
         // Prepare an insert statement
-        $sql = "INSERT INTO users (username, password, fullname, email, accountState) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO user (username, password, fullname, email, verified) VALUES (?, ?, ?, ?, ?)";
 
         if($stmt = $mysqli->prepare($sql)){
             // Bind variables to the prepared statement as parameters
-            $stmt->bind_param("sssss", $param_username, $param_password,$param_fullname,$param_email,$param_state);
+            $stmt->bind_param("sssss", $param_username, $param_password,$param_fullname,$param_email,$param_verify);
 
             // Set parameters
             $param_username = $username;
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
             $param_fullname = $full_name;
             $param_email = $email;
-            $param_state = "no";
+            $param_verify = "no";
             
             $subject = 'Verification for 1004 Account';
             $message = "Hi $full_name,<br>
@@ -79,9 +79,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             else {
                 $email_err = "Unable to send email to this email address.";
             }
-        }
         // Close statement
         $stmt->close();
+        }
+        
     }
 
     // Close connection

@@ -10,7 +10,7 @@ else {
     $username = $_SESSION['username'];    
     require_once "config.php";
     
-    $sql = "SELECT email, fullname, password FROM users WHERE username = ?";
+    $sql = "SELECT email, fullname, password FROM user WHERE username = ?";
     
     if ($stmt = $mysqli->prepare($sql))
     {
@@ -63,7 +63,7 @@ else {
         }
         if (empty($current_password_err) && empty($new_password_err) && empty($confirm_password_err) && empty($full_name_err) && empty($email_err))
         {
-            $sql = "UPDATE users SET fullname = ?, email = ?, password = ? WHERE username = ?;";
+            $sql = "UPDATE user SET fullname = ?, email = ?, password = ? WHERE username = ?;";
             if($stmt = $mysqli->prepare($sql))
             {
                 $stmt->bind_param("ssss",$param_fullname,$param_email,$param_password,$param_username);
@@ -147,7 +147,7 @@ else {
                         <input type="reset" class="btn btn-default" value="Reset">
                     </div>
                       <a href='event-details.php' class='btn btn-info'>Go back to Homepage</a>
-                      <span class="help-block"><?php echo $final_changes; ?></span>
+                      <span class="help-block text-center"><?php echo $final_changes; ?></span>
                     </fieldset>
                 </form>
               </div>

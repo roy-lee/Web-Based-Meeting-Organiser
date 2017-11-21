@@ -9,7 +9,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
         $id = $_GET['id'];
         $mode = $_GET['mode'];
         
-        $sql = "select accountState from users where username = ?";
+        $sql = "select verified from user where username = ?";
 
         if($stmt = $mysqli->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -34,7 +34,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
                     {
                         if ($mode == "verify")
                         {
-                            $sql = "UPDATE users SET accountState = 'yes' WHERE username = '$id';";
+                            $sql = "UPDATE user SET verified = 'yes' WHERE username = '$id';";
                             if ($stmt = $mysqli->prepare($sql))
                             {
                                 if($stmt->execute()){
@@ -51,7 +51,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
                         }
                         elseif ($mode == "delete")
                         {
-                            $sql = "DELETE FROM users where username = '$id' AND accountState = 'no';";
+                            $sql = "DELETE FROM user where username = '$id' AND verified = 'no';";
                             if ($stmt = $mysqli->prepare($sql))
                             {
                                 if($stmt->execute()){

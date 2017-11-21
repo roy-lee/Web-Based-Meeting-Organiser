@@ -41,7 +41,7 @@ function validate_email($mode,$mysqli,$username)
         }
         else
         {
-            $sql = "SELECT username FROM users WHERE email = ?";
+            $sql = "SELECT username FROM user WHERE email = ?";
 
             if($stmt = $mysqli->prepare($sql))
             {
@@ -175,7 +175,7 @@ function validate_username($mysqli)
         $err = "Username must not contain symbols and spaces.";
     } else{
         // Prepare a select statement
-        $sql = "SELECT userid FROM users WHERE username = ?";
+        $sql = "SELECT userid FROM user WHERE username = ?";
 
         if($stmt = $mysqli->prepare($sql)){
             // Bind variables to the prepared statement as parameters
