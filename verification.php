@@ -28,7 +28,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
                     $stmt->fetch();
                     if ($verified == "yes")
                     {
-                        echo "This account is already verified and no action will be taken.";
+                        echo "This account is already verified and no action will be taken. <a href='login.php'>Proceed to login now</a>";
                     }
                     else
                     {
@@ -39,7 +39,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
                             {
                                 if($stmt->execute()){
                                     // Redirect to login page
-                                    echo "You are successfully verified. You can proceed to the login page now";
+                                    echo "You are successfully verified. <a href='login.php'>Proceed to login now</a>";
                                 } else{
                                     echo "Something went wrong. Please try again later.";
                                 }

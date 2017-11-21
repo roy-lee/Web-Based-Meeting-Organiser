@@ -50,6 +50,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             save the username to the session */
                             session_start();
                             $_SESSION['username'] = $username;
+                            $_SESSION['role'] = $_POST['role'];
                             header("location: index.php");
                         } else{
                             if ($state != "yes")
@@ -112,7 +113,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             <span class="help-block"><?php echo $password_err; ?></span>
                         </div>
                         <div class="form-group">
-                            <input type="submit" class="btn btn-primary" value="Submit">
+                            <label>Role:</label>
+                            <input type="radio" name="role" value="participant" checked='checked'> Participant
+                            <input type="radio" name="role" value="organiser"> Organiser
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary" value="Log In">
                         </div>
                         <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
                                     </fieldset>

@@ -10,7 +10,7 @@ else {
     $username = $_SESSION['username'];    
     require_once "config.php";
     
-    $sql = "select email, fullname, password from users where username = ?";
+    $sql = "SELECT email, fullname, password FROM users WHERE username = ?";
     
     if ($stmt = $mysqli->prepare($sql))
     {
@@ -33,9 +33,65 @@ else {
             }
         }
     }
+    
     // Define variables and initialize with empty values
-    $current_password = $new_password = $confirm_password = $full_name = $email = "";
+    $new_password = $confirm_password = "";
     $current_password_err = $new_password_err = $confirm_password_err = $full_name_err = $email_err = "";
+    $final_changes = "";
+    
+    if($_SERVER["REQUEST_METHOD"] == "POST")
+    {
+        if(isset($_POST['full_name']) && isset($_POST['email']) && isset($_POST['current_password']) && isset($_POST['new_password']) && isset($_POST['confirm_password']))
+        {
+            require_once "fields_validation.php";
+            $final_changes = "*No changes were made due to invalid input*";            
+            
+            $full_name_err = validate_full_name();
+            if (empty($full_name_err))
+            {
+                $user_fullname = trim($_POST['full_name']);
+            }
+            $email_err = validate_email("profile",$mysqli,$username);
+            if (empty($email_err))
+            {
+                $user_email = trim($_POST['email']);
+            }
+            $current_password_err = current_password($user_currentpass);
+            $new_password_err = validate_password();
+            $confirm_password_err = confirm_passwords();
+            
+        }
+        if (empty($current_password_err) && empty($new_password_err) && empty($confirm_password_err) && empty($full_name_err) && empty($email_err))
+        {
+            $sql = "UPDATE users SET fullname = ?, email = ?, password = ? WHERE username = ?;";
+            if($stmt = $mysqli->prepare($sql))
+            {
+                $stmt->bind_param("ssss",$param_fullname,$param_email,$param_password,$param_username);
+                $param_fullname = trim($_POST['full_name']);
+                $param_email = trim($_POST['email']);
+                $param_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+                $param_username = $username;
+                
+                if ($stmt->execute())
+                {
+                    $stmt->close();
+                    $final_changes = "Changes were updated successfully!";
+
+                }
+                else
+                {
+                    echo "Something went wrong. Please try again later.";
+                }
+            }
+            else
+            {
+                echo "Unable to prepare statement";
+            }
+            
+        }
+    }
+    
+    $mysqli->close();
 }
 
 
@@ -63,7 +119,7 @@ else {
                   <fieldset>
                     <div class="form-group <?php echo (!empty($full_name_err)) ? 'has-error' : ''; ?>">
                         <label>Full Name:<sup>*</sup></label>
-                        <input type="text" name="username"class="form-control" value="<?php echo $user_fullname; ?>" required>
+                        <input type="text" name="full_name"class="form-control" value="<?php echo $user_fullname; ?>" required>
                         <span class="help-block"><?php echo $full_name_err; ?></span>
                     </div>
                     <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
@@ -71,26 +127,27 @@ else {
                         <input type="email" name="email" class="form-control" value="<?php echo $user_email; ?>" required>
                         <span class="help-block"><?php echo $email_err; ?></span>
                     </div>
-                    <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
+                    <div class="form-group <?php echo (!empty($current_password_err)) ? 'has-error' : ''; ?>">
                         <label>Current Password:<sup>*</sup></label>
-                        <input type="password" name="current_password" class="form-control" value="<?php echo $current_password; ?>" required>
+                        <input type="password" name="current_password" class="form-control" required>
                         <span class="help-block"><?php echo $current_password_err; ?></span>
                     </div>
-                    <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
+                    <div class="form-group <?php echo (!empty($new_password_err)) ? 'has-error' : ''; ?>">
                         <label>New Password:<sup>*</sup></label>
-                        <input type="password" name="new_password" class="form-control" value="<?php echo $new_password; ?>" required>
+                        <input type="password" name="new_password" class="form-control" required>
                         <span class="help-block"><?php echo $new_password_err; ?></span>
                     </div>
                     <div class="form-group <?php echo (!empty($confirm_password_err)) ? 'has-error' : ''; ?>">
                         <label>Confirm Password:<sup>*</sup></label>
-                        <input type="password" name="confirm_password" class="form-control" value="<?php echo $confirm_password; ?>" required>
+                        <input type="password" name="confirm_password" class="form-control" required>
                         <span class="help-block"><?php echo $confirm_password_err; ?></span>
                     </div>
                     <div class="form-group">
                         <input type="submit" class="btn btn-primary" value="Update">
                         <input type="reset" class="btn btn-default" value="Reset">
                     </div>
-                      <button class="btn btn-info" onclick="location.href = './event-details.php';">Go back to Homepage</button>
+                      <a href='event-details.php' class='btn btn-info'>Go back to Homepage</a>
+                      <span class="help-block"><?php echo $final_changes; ?></span>
                     </fieldset>
                 </form>
               </div>
