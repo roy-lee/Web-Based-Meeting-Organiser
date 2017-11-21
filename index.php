@@ -41,7 +41,6 @@ include("includes/header.inc.php");
         <div class="panel panel-orange panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-users color-teal"></em>
             <div class="large">24</div>
-            <div class="text-muted">Registered Members</div>
           </div>
         </div>
       </div>
@@ -49,6 +48,7 @@ include("includes/header.inc.php");
   </div>
 
   <div class="row">
+
     <div class="col-md-12">
     <div class="col-md-7 no-padding">
       <div class="panel panel-default ">
@@ -58,46 +58,49 @@ include("includes/header.inc.php");
         <div class="panel-body timeline-container">
           <ul class="timeline">
             <li>
-              <!-- echo class 'primary' beside timeline-badge for next upcoming event -->
               <div class="timeline-badge primary"><em class="glyphicon glyphicon-calendar"></em></div>
               <div class="timeline-panel">
                 <div class="timeline-heading">
-                  <h4 class="timeline-title">ECHO EVENT TITLE on ECHO DATE</h4>
+                  <h4 class="timeline-title">ECHO TITLE on ECHO DATE</h4>
                 </div>
                 <div class="timeline-body">
-                  <p>ECHO EVENT DETAILS <br>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at sodales nisl. Donec malesuada orci ornare risus finibus feugiat.</p>
-                    <button type="button" class="btn btn-md btn-primary pull-right">Details</button>
+                  <p>ECHO EVENT DETAILS (LIMIT TO 255 and truncate with ...)<br>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at sodales nisl. Donec malesuada orci ornare risus finibus feugiat.</p>
+                  <hr>
+                  <div><p class="pull-left">Organised by: <br>ECHO EVENT ORGANISER</p>
+                  <button type="button" class="btn btn-md btn-primary pull-right">Details</button>
+                </div>
                 </div>
               </div>
             </li>
 
             <li>
-              <div class="timeline-badge"><em class="glyphicon glyphicon-calendar"></em></div>
+              <div class="timeline-badge primary"><em class="glyphicon glyphicon-calendar"></em></div>
               <div class="timeline-panel">
                 <div class="timeline-heading">
-                  
-
-                  <h4 class="timeline-title">ECHO EVENT TITLE on ECHO DATE</h4>
+                  <h4 class="timeline-title">ECHO TITLE on ECHO DATE</h4>
                 </div>
                 <div class="timeline-body">
-                  <p>ECHO EVENT DETAILS <br>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at sodales nisl. Donec malesuada orci ornare risus finibus feugiat.</p>
-                    <button type="button" class="btn btn-md btn-primary pull-right">Details</button>
+                  <p>ECHO EVENT DETAILS (LIMIT TO 255 and truncate with ...)<br>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at sodales nisl. Donec malesuada orci ornare risus finibus feugiat.</p>
+                  <hr>
+                  <div><p class="pull-left">Organised by: <br>ECHO EVENT ORGANISER</p>
+                  <button type="button" class="btn btn-md btn-primary pull-right">Details</button>
+                </div>
                 </div>
               </div>
             </li>
 
             <li>
-              <div class="timeline-badge"><em class="glyphicon glyphicon-calendar"></em></div>
+              <div class="timeline-badge primary"><em class="glyphicon glyphicon-calendar"></em></div>
               <div class="timeline-panel">
                 <div class="timeline-heading">
-                  <h4 class="timeline-title">ECHO EVENT TITLE on ECHO DATE</h4>
+                  <h4 class="timeline-title">ECHO TITLE on ECHO DATE</h4>
                 </div>
                 <div class="timeline-body">
-                  <p>ECHO EVENT DETAILS <br>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at sodales nisl. Donec malesuada orci ornare risus finibus feugiat.</p>
-                    <button type="button" class="btn btn-md btn-primary pull-right">Details</button>
+                  <p>ECHO EVENT DETAILS (LIMIT TO 255 and truncate with ...)<br>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at sodales nisl. Donec malesuada orci ornare risus finibus feugiat.</p>
+                  <hr>
+                  <div><p class="pull-left">Organised by: <br>ECHO EVENT ORGANISER</p>
+                  <button type="button" class="btn btn-md btn-primary pull-right">Details</button>
+                </div>
                 </div>
               </div>
             </li>

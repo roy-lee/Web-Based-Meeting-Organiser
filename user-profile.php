@@ -1,5 +1,5 @@
 <?php
-
+$currentPage = 'userProfile';
 session_start();
 // If session variable is not set it will redirect to login page
 if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
@@ -7,27 +7,27 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
   exit;
 }
 else {
-    $username = $_SESSION['username'];    
+    $username = $_SESSION['username'];
     require_once "config.php";
-    
-    $sql = "select email, fullname, password from users where username = ?";
-    
+
+    $sql = "SELECT email, fullName, password from users where username = ?";
+
     if ($stmt = $mysqli->prepare($sql))
     {
         $stmt->bind_param("s",$param_username);
         $param_username = $username;
-        
+
         if($stmt->execute())
         {
             $stmt->store_result();
-            
+
             if ($stmt->num_rows == 1)
             {
                 $stmt->bind_result($email,$fullname,$password);
                 if ($stmt->fetch())
                 {
                     $user_email = $email;
-                    $user_fullname = $fullname;
+                    $user_fullname = $fullName;
                     $user_currentpass = $password;
                 }
             }
@@ -90,7 +90,7 @@ else {
                         <input type="submit" class="btn btn-primary" value="Update">
                         <input type="reset" class="btn btn-default" value="Reset">
                     </div>
-                      <button class="btn btn-info" onclick="location.href = './event-details.php';">Go back to Homepage</button>
+                      <button class="btn btn-info" onclick="location.href = './index.php';">Go back to Homepage</button>
                     </fieldset>
                 </form>
               </div>
