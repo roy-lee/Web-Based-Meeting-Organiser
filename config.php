@@ -8,6 +8,7 @@ define('DB_NAME', 'meeting_organiser');
 
 /* Attempt to connect to MySQL database */
 $mysqli = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+$conn = mysqli_connect(DB_SERVER,DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 // Check connection
 if($mysqli === false){

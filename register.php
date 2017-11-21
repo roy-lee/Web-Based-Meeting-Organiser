@@ -26,15 +26,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     {
         $confirm_password = trim($_POST['confirm_password']);
     }
+
     $full_name_err = validate_full_name();
     if(empty($full_name_err))
+
     {
         $full_name = trim($_POST['full_name']);
     }
+
     $email_err = validate_email("register",$mysqli,"");
     if(empty($email_err))
     {
         $email = trim($_POST['email']);
+
     }
 
     // Check input errors before inserting in database
@@ -52,19 +56,21 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
             $param_fullname = $full_name;
             $param_email = $email;
+
             $param_verify = "no";
-            
+
             $subject = 'Verification for 1004 Account';
             $message = "Hi $full_name,<br>
             Your account has been successfully registered.<br>
             You must now validate your account by clicking the link below<br>
-            http://localhost/ICT1004/Project2_roy/verification.php?id=$username&mode=verify<br><br>
+            http://localhost/verification.php?id=$username&mode=verify<br><br>
             If you did not register for this account, click the link below<br>
+
             http://localhost/ICT1004/Project2_roy/verification.php?id=$username&mode=delete<br><br>
             Do not reply to this email.<br>
             Thanks.";
             $result = send_email($email,$subject,$message,true);
-            
+
             if ($result == true)
             {
                 // Attempt to execute the prepared statement
@@ -72,9 +78,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     // Redirect to login page
                     header("location: verification.php");
                 } else{
-                    echo "Something went wrong. Please try again later.";
+                    echo "Something went wrong while inserting user account details. Please try again later.";
                 }
-                
+
             }
             else {
                 $email_err = "Unable to send email to this email address.";
