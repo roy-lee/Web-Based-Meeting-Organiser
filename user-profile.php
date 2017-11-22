@@ -1,5 +1,5 @@
 <?php
-
+$currentPage = 'userProfile';
 session_start();
 // If session variable is not set it will redirect to login page
 if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
@@ -7,27 +7,27 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
   exit;
 }
 else {
-    $username = $_SESSION['username'];    
+    $username = $_SESSION['username'];
     require_once "config.php";
-    
+
     $sql = "SELECT email, fullname, password FROM user WHERE username = ?";
     
     if ($stmt = $mysqli->prepare($sql))
     {
         $stmt->bind_param("s",$param_username);
         $param_username = $username;
-        
+
         if($stmt->execute())
         {
             $stmt->store_result();
-            
+
             if ($stmt->num_rows == 1)
             {
                 $stmt->bind_result($email,$fullname,$password);
                 if ($stmt->fetch())
                 {
                     $user_email = $email;
-                    $user_fullname = $fullname;
+                    $user_fullname = $fullName;
                     $user_currentpass = $password;
                 }
             }
@@ -147,8 +147,10 @@ else {
                         <input type="submit" class="btn btn-primary" value="Update">
                         <input type="reset" class="btn btn-default" value="Reset">
                     </div>
-                      <a href='event-details.php' class='btn btn-info'>Go back to Homepage</a>
+
+                      <a href='./index.php' class='btn btn-info'>Go back to Homepage</a>
                       <span class="help-block text-center"><?php echo $final_changes; ?></span>
+
                     </fieldset>
                 </form>
               </div>
