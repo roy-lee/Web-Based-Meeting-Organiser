@@ -21,6 +21,16 @@ SET time_zone = "+00:00";
 --
 -- Database: `meeting_organiser`
 --
+-- -----------------------------------------------------
+-- Schema meeting_organiser
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema meeting_organiser
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `meeting_organiser` DEFAULT CHARACTER SET utf8 ;
+USE `meeting_organiser` ;
+
 
 -- --------------------------------------------------------
 
