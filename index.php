@@ -41,6 +41,7 @@ include("includes/header.inc.php");
       <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
         <div class="panel panel-blue panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-calendar-check-o color-orange"></em>
+
             <div class="large">
               <?php
               $query = "SELECT COUNT(*) AS SUM FROM meeting";
@@ -92,6 +93,7 @@ include("includes/header.inc.php");
   <div class="row">
 
     <div class="col-md-12">
+
     <div class="col-md-6 no-padding">
       <div class="panel panel-default ">
         <div class="panel-heading">
@@ -196,11 +198,10 @@ include("includes/header.inc.php");
             </div><!--End .article-->";
             }
           ?>
-          
+
         </div>
       </div><!--End .articles-->
     </div><!--/.col-->
-
 
 
 <?php include("includes/footer.inc.php"); ?>
