@@ -25,45 +25,16 @@
 		<!-- Navbar -->
 		<?php include('components/nav.php'); ?>
 		<?php
-		/**
-  *Get an array of member values
-  *
-  *@para string $user_id  The member's userID
-  *@return an array of the member value based on its userID (i.e. $result = $user->user_data('1'); echo $result['Name'];)
-  */
-function user_data($user_id)
- {
-  $user_id=(int)$user_id;
-  $func_num_args=func_num_args();
-  $func_get_args=func_get_args();
-  if($func_get_args>1)
-  {
-   unset($func_get_args[0]);
-   $fields='`'.implode('`,`',$func_get_args).'`';
-   $sql="SELECT $fields from user where `userID`='$user_id'";
-   $results = mysqli_query($conn,$sql);
-	 return mysqli_fetch_array($results);
-  }
- }
+		function numtomonth($month)
+		{
+			$month_array = ['Jan','Feb','Mar','April','May','June','July','Aug','Sep','Oct','Nov','Dec'];
+			$month = (int)substr($month,5,8);
+			$month = $month - 1;
+			return $month_array[$month];
+		}
 
- /**
-  *Gets the member values.
-  *
-  *@para string $field   Member column Names(i.e. echo $user->member_values('Name');)
-  *@return string of the member value
-  */
- function member_values($field)
- {
-  if($this->logged_in()==true)
-  {
-   $Session_user_id=$_SESSION['userID'];
-   $user_data=$this->user_data($Session_user_id,'userID','email','username','fullName');
-   return $user_data[$field];
-  }
- }
-/* check whether user is logged in */
- function logged_in()
- {
-  return(isset($_SESSION['userID'])) ? true:false;
- }
+		function getdateonly($date) {
+			$date = substr($date,-2);
+			return $date;
+		}
 		?>

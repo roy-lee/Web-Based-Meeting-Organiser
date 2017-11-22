@@ -264,16 +264,39 @@ else
                                                 </tr>
                                               </thead>
                                               <?php
-                      												$sql = "Select * from user where userID!=(select user_userID from meeting_participants where user_userID='$userid')";
-                      												$results = mysqli_query($conn,$sql);
-                      												while($row = mysqli_fetch_assoc($results))
-                      												{
-                      													echo"
-                      														<tr>
-                      															<td>".$row['fullName']."</td>
-                      															<td>".$row['email']."</td>
-                      														</tr>";
-                      												}
+                      												// $sql = "SELECT * from user where userID = (Select * from meeting_participants where meeting_meetingID ='$id')";
+																							// $results = mysqli_query($conn,$sql);
+                      												// while($row = mysqli_fetch_assoc($results))
+                      												// {
+                      												// 	echo"
+                      												// 		<tr>
+                      												// 			<td>".$row['fullName']."</td>
+                      												// 			<td>".$row['email']."</td>
+                      												// 		</tr>";
+                      												// }
+
+																							$query = "SELECT * from user usr
+																												inner join meeting_participants mp
+																												on mp.user_userID = usr.userID
+																												where mp.meeting_meetingID='$id'";
+
+																							if ($result = $mysqli->query($query)) {
+
+																							    /* fetch associative array */
+																							    while ($row = $result->fetch_assoc()) {
+																										echo"
+			                      														<tr>
+			                      															<td>".$row['fullName']."</td>
+			                      															<td>".$row['email']."</td>
+			                      														</tr>";
+																							    }
+
+																							    /* free result set */
+																							    $result->free();
+																							}
+
+																							/* close connection */
+																							$mysqli->close();
                       											  ?>
                                             </table>
                                           </div>

@@ -1,31 +1,40 @@
 <?php
 $currentPage = 'createMeeting';
 include("includes/header.inc.php");
+
 require_once 'config.php';
+
 $organiserusername = $_SESSION['username'];
+
 /* ---------------
  *
  * On page run
  *
  * ---------------  */
+
 function onPageRun() {
     getUserId();
 }
+
 #onPageRun();
 $userid = getUserId($mysqli,$organiserusername);
 $venues = get_venues($mysqli);
+
 function getUserId($mysqli,$username) {
     // Prepare a select statement
     $sql = "select userID from user where username = ?";
     if ($stmt = $mysqli->prepare($sql)) {
         // Bind variables to the prepared statement as parameters
         $stmt->bind_param("s", $param_username);
+
         // Set parameters
         $param_username = $username;
+
         // Attempt to execute the prepared statement
         if ($stmt->execute()) {
             // Store result
             $stmt->store_result();
+
             //
             if ($stmt->num_rows == 1) {
                 // Bind result variables
@@ -35,16 +44,21 @@ function getUserId($mysqli,$username) {
                 }
             }
         }
+
+
         // Close statement
         $stmt->close();
         return $userid;
     }
 }
+
 /* ---------------
  *
  * On page run
  *
  * ---------------  */
+
+
 /* ---------------
  *
  * Post Validation
@@ -57,19 +71,21 @@ $meetingtitle_err = $meetingvenue_err = $datestart_err = $dateend_err = $organis
 $repeattype_err = $isallday_err = $description_err = ""; // Invalid input only
 //$_POST["meetingtitle"]; //$_POST["meetingvenue"]; //$_POST["meetingallday"];
 //$_POST["meetingfrom"]; //$_POST["meetingto"]; //$_POST["meetingrepeat"];
+
 if (isset($_POST["meetingtitle"]))
 {
     validateOnPost($mysqli,$venues,$userid);
 }
+
 function get_venues($mysqli)
 {
     $venues = array();
     $sql = "select * from venue;";
-    
+
     $result = $mysqli->query($sql);
     if ($result->num_rows > 0)
     {
-        while($row = $result->fetch_assoc()) 
+        while($row = $result->fetch_assoc())
         {
             $venues[$row['venue']] = $row['venueID'];
         }
@@ -78,8 +94,10 @@ function get_venues($mysqli)
     {
         $venue['NIL'] = 0;
     }
+
     return $venues;
 }
+
 function display_venues($venues)
 {
     foreach($venues as $key => $value)
@@ -87,6 +105,7 @@ function display_venues($venues)
         echo "<option value=".$value.">".$key."</option>";
     }
 }
+
 function validateOnPost($mysqli,$venues,$userid) {
     // Validate blanks
     if (empty(trim($_POST["meetingtitle"]))) {
@@ -101,23 +120,26 @@ function validateOnPost($mysqli,$venues,$userid) {
     if (empty(trim($_POST["meetingto"]))) {
         $username_err = "Please enter the end date";
     }
-    
+
+
     /*
      * Meeting data
      */
     // Check input errors before inserting in database
     if (empty($meetingtitle_err) && empty($meetingvenue_err) && empty($datestart_err) && empty($organiserid_err)
             && empty($repeattype_err) && empty($password_err) && empty($confirm_password_err)) {
+
         // Prepare an insert statement
         $sql = "INSERT INTO meeting (startDate, endDate, startTime, endTime, title, description, eventStatus, venue_venueid, user_userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
         if ($stmt = $mysqli->prepare($sql)) {
             // Bind variables to the prepared statement as parameters
             $stmt->bind_param("ssssssiii", $param_sdate, $param_edate, $param_stime, $param_etime, $param_title, $param_description, $param_eventStatus, $param_venueid, $param_userid);
-            
+
             $param_eventStatus = 1;
             $param_venueid = $_POST['meetingvenue'];
             $param_userid = $userid;
-            
+
             $start_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingfrom']);
             $start_date = $start_datetime->format('Y-m-d');
             $start_time = $start_datetime->format('h:i:s');
@@ -129,7 +151,7 @@ function validateOnPost($mysqli,$venues,$userid) {
             }
             $param_sdate = $start_date;
             $param_stime = $start_time;
-            
+
             $end_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingto']);
             $end_date = $end_datetime->format('Y-m-d');
             $end_time = $end_datetime->format('h:i:s');
@@ -141,10 +163,12 @@ function validateOnPost($mysqli,$venues,$userid) {
             }
             $param_edate = $end_date;
             $param_etime = $end_time;
+
             $param_title = $_POST['meetingtitle'];
             $param_description = $_POST['description'];
-            
-            
+
+
+
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 // Executed, pass to index, show meetings
@@ -155,25 +179,32 @@ function validateOnPost($mysqli,$venues,$userid) {
                 echo "Something went wrong. Please try again later.";
             }
         } else {echo "unable to prepare statement";}
+
         // Close statement
         $stmt->close();
     }
+
     /*
      * Participants
      */
     /*
     $participantids = $_POST["participantids"];
+
     $meetingid = "";
+
     // Insert participants into participant table
     foreach ($participantids as $pid) {
         // Prepare an insert statement
         $sql = "INSERT INTO participants (meeting_meetingid, user_userid) VALUES (?, ?)";
+
         if ($stmt = $mysqli->prepare($sql)) {
             // Bind variables to the prepared statement as parameters
             $stmt->bind_param("ss", $param_meetingid, $param_participantid);
+
             // Set parameters
             $param_meetingid = $meetingid;
             $param_participantid = $pid;
+
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 // On success
@@ -182,6 +213,7 @@ function validateOnPost($mysqli,$venues,$userid) {
                 echo "Something went wrong. Please try again later.";
             }
         }
+
         // Close statement
         $stmt->close();
     }*/
@@ -244,11 +276,11 @@ function validateOnPost($mysqli,$venues,$userid) {
                                 <span class="help-block"><?php echo $dateend_err; ?></span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="description">Description</label>
                             <div class="col-md-10">
-                                <input class="form-control" id=description type="text" name="description" placeholder="Description of Meeting">            
+                                <input class="form-control" id=description type="text" name="description" placeholder="Description of Meeting">
                                 <span class="help-block"><?php echo $description_err; ?></span>
                             </div>
                         </div>
