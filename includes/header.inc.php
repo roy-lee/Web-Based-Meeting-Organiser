@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Meeting Organiser</title>
 
-                <link href="css/bootstrap.min.css" rel="stylesheet" >
+    <link href="css/bootstrap.min.css" rel="stylesheet" >
 		<link href="css/font-awesome.min.css" rel="stylesheet">
 		<link href="css/datepicker3.css" rel="stylesheet">
 		<link href="css/bootstrap-table.css" rel="stylesheet">
@@ -24,3 +24,17 @@
 		<?php include('config.php'); ?>
 		<!-- Navbar -->
 		<?php include('components/nav.php'); ?>
+		<?php
+		function numtomonth($month)
+		{
+			$month_array = ['Jan','Feb','Mar','April','May','June','July','Aug','Sep','Oct','Nov','Dec'];
+			$month = (int)substr($month,5,8);
+			$month = $month - 1;
+			return $month_array[$month];
+		}
+
+		function getdateonly($date) {
+			$date = substr($date,-2);
+			return $date;
+		}
+		?>

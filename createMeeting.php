@@ -131,6 +131,7 @@ if (isset($_POST["meetingtitle"]))
 }
 
 function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$organiserusername) {
+
     // Validate blanks
     if (empty(trim($_POST["meetingtitle"]))) {
         $meetingtitle_err = "Please enter a meeting title.";
@@ -144,7 +145,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
     if (empty(trim($_POST["meetingto"]))) {
         $username_err = "Please enter the end date";
     }
-    
+
 
     /*
      * Meeting data
@@ -159,11 +160,11 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
         if ($stmt = $mysqli->prepare($sql)) {
             // Bind variables to the prepared statement as parameters
             $stmt->bind_param("ssssssiii", $param_sdate, $param_edate, $param_stime, $param_etime, $param_title, $param_description, $param_eventStatus, $param_venueid, $param_userid);
-            
+
             $param_eventStatus = 1;
             $param_venueid = $_POST['meetingvenue'];
             $param_userid = $userid;
-            
+
             $start_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingfrom']);
             $start_date = $start_datetime->format('Y-m-d');
             $start_time = $start_datetime->format('h:i:s');
@@ -175,7 +176,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
             }
             $param_sdate = $start_date;
             $param_stime = $start_time;
-            
+
             $end_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingto']);
             $end_date = $end_datetime->format('Y-m-d');
             $end_time = $end_datetime->format('h:i:s');
@@ -190,7 +191,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
 
             $param_title = $_POST['meetingtitle'];
             $param_description = $_POST['description'];
-            
+
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 /*
@@ -306,11 +307,11 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                                 <span class="help-block"><?php echo $dateend_err; ?></span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="description">Description</label>
                             <div class="col-md-10">
-                                <input class="form-control" id=description type="text" name="description" placeholder="Description of Meeting">            
+                                <input class="form-control" id=description type="text" name="description" placeholder="Description of Meeting">
                                 <span class="help-block"><?php echo $description_err; ?></span>
                             </div>
                         </div>
