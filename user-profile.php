@@ -10,8 +10,8 @@ else {
     $username = $_SESSION['username'];
     require_once "config.php";
 
-    $sql = "SELECT email, fullname, password FROM user WHERE username = ?";
-    
+    $sql = "SELECT email, fullName, password FROM user WHERE username = ?";
+
     if ($stmt = $mysqli->prepare($sql))
     {
         $stmt->bind_param("s",$param_username);
@@ -27,25 +27,25 @@ else {
                 if ($stmt->fetch())
                 {
                     $user_email = $email;
-                    $user_fullname = $fullName;
+                    $user_fullname = $fullname;
                     $user_currentpass = $password;
                 }
             }
         }
     }
-    
+
     // Define variables and initialize with empty values
     $new_password = $confirm_password = "";
     $current_password_err = $new_password_err = $confirm_password_err = $full_name_err = $email_err = "";
     $final_changes = "";
-    
+
     if($_SERVER["REQUEST_METHOD"] == "POST")
     {
         if(isset($_POST['full_name']) && isset($_POST['email']) && isset($_POST['current_password']) && isset($_POST['new_password']) && isset($_POST['confirm_password']))
         {
             require_once "fields_validation.php";
-            $final_changes = "*No changes were made due to invalid input*";            
-            
+            $final_changes = "*No changes were made due to invalid input*";
+
             $full_name_err = validate_full_name();
             if (empty($full_name_err))
             {
@@ -59,7 +59,7 @@ else {
             $current_password_err = current_password($user_currentpass);
             $new_password_err = validate_password();
             $confirm_password_err = confirm_passwords();
-            
+
         }
         if (empty($current_password_err) && empty($new_password_err) && empty($confirm_password_err) && empty($full_name_err) && empty($email_err))
         {
@@ -71,7 +71,7 @@ else {
                 $param_email = trim($_POST['email']);
                 $param_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
                 $param_username = $username;
-                
+
                 if ($stmt->execute())
                 {
                     $stmt->close();
@@ -87,10 +87,10 @@ else {
             {
                 echo "Unable to prepare statement";
             }
-            
+
         }
     }
-    
+
     $mysqli->close();
 }
 

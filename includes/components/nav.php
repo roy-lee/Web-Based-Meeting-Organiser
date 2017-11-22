@@ -7,6 +7,34 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username']) || !isset($_SES
   header("location: login.php");
   exit;
 }
+else {
+    $username = $_SESSION['username'];
+    require_once "config.php";
+
+    $sql = "SELECT email, fullName, password FROM user WHERE username = ?";
+
+    if ($stmt = $mysqli->prepare($sql))
+    {
+        $stmt->bind_param("s",$param_username);
+        $param_username = $username;
+
+        if($stmt->execute())
+        {
+            $stmt->store_result();
+
+            if ($stmt->num_rows == 1)
+            {
+                $stmt->bind_result($email,$fullname,$password);
+                if ($stmt->fetch())
+                {
+                    $user_email = $email;
+                    $user_fullname = $fullname;
+                    $user_currentpass = $password;
+                }
+            }
+        }
+    }
+  }
 ?>
 
 <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
@@ -18,7 +46,6 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username']) || !isset($_SES
 						<span class="icon-bar"></span></button>
 
 					<a class="navbar-brand" href="#"><span>Meeting</span> Organiser</a>
-                    <a href="./user-profile.php" class='navbar-brand pull-right'><span> | User</span> Profile | </a>
 
 				</div>
 			</div><!-- /.container-fluid -->
@@ -30,17 +57,12 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username']) || !isset($_SES
 					<img src="../../img/profile-pic-2.jpg" width="50" class="img-responsive" alt="">
 				</div>
 				<div class="profile-usertitle">
-					<div class="profile-usertitle-name"><?php echo $_SESSION['username']." (".$_SESSION['role'].")"; ?></div>
+					<div class="profile-usertitle-name"><?php echo $user_fullname; ?><br><?php echo "(".$_SESSION['role'].")"; ?></div>
 					<div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
 				</div>
 				<div class="clear"></div>
 			</div>
 			<div class="divider"></div>
-			<form role="search">
-				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Search">
-				</div>
-			</form>
 			<ul class="nav menu">
 				<li class="<?php if($currentPage =='index'){echo 'active';}?>"><a href="index.php"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
 				<!-- <li><a href="widgets.html"><em class="fa fa-calendar">&nbsp;</em> Widgets</a></li> -->
@@ -54,7 +76,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username']) || !isset($_SES
 				<li><a href="tables.html"><em class="fa fa-table">&nbsp;</em> Tables</a></li>
 				<li><a href="panels.html"><em class="fa fa-clone">&nbsp;</em> Alerts &amp; Panels</a></li>
 				<li><a href="icons.html"><em class="fa fa-star-o">&nbsp;</em> Icons</a></li> -->
-        <li class="<?php if($currentPage =='userProfile'){echo 'active';}?>"><a href="./user-profile.php?id=<?php echo $_SESSION['userID'] ?>"><em class="fa fa-user">&nbsp;</em>User Profile</a></li>
+        <li class="<?php if($currentPage =='userProfile'){echo 'active';}?>"><a href="./user-profile.php"><em class="fa fa-user">&nbsp;</em>User Profile</a></li>
 				<li><a href="logout.php"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
 				<!-- <li class="parent "><a data-toggle="collapse" href="#sub-item-1">
 					<em class="fa fa-file-o">&nbsp;</em> Pages <span data-toggle="collapse" href="#sub-item-1" class="icon pull-right"><i class="fa fa-plus"></i></span>
