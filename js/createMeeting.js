@@ -37,12 +37,12 @@ function initDatePicker() {
         format: "LT"
     });
 
-    $("#startTime").on("dp.change", function (e) {
-        $('#endTime').data("DateTimePicker").minDate(e.date);
-    });
-    $("#endTime").on("dp.change", function (e) {
-        $('#startTime').data("DateTimePicker").maxDate(e.date);
-    });
+//    $("#startTime").on("dp.change", function (e) {
+//        $('#endTime').data("DateTimePicker").minDate(e.date);
+//    });
+//    $("#endTime").on("dp.change", function (e) {
+//        $('#startTime').data("DateTimePicker").maxDate(e.date);
+//    });
     /* ---------- !!!! different datepicker library !!!! ---------- */
 
     /* ---------- !!!! different datepicker library !!!! ---------- */
