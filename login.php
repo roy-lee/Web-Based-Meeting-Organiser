@@ -50,7 +50,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             save the username to the session */
                             session_start();
                             $_SESSION['username'] = $username;
+
                             $_SESSION['role'] = $_POST['role'];
+
                             header("location: index.php");
                         } else{
                             if ($verified != "yes")
