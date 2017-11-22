@@ -5,7 +5,6 @@ include("includes/header.inc.php");
 require_once 'config.php';
 
 $organiserusername = $_SESSION['username'];
-$userid = "";
 
 /* ---------------
  *
@@ -17,18 +16,19 @@ function onPageRun() {
     getUserId();
 }
 
-onPageRun();
+#onPageRun();
+$userid = getUserId($mysqli,$organiserusername);
+$venues = get_venues($mysqli);
 
-function getUserId() {
+function getUserId($mysqli,$username) {
     // Prepare a select statement
-    $sql = "SELECT userid FROM users WHERE username = ?";
-
+    $sql = "select userID from user where username = ?";
     if ($stmt = $mysqli->prepare($sql)) {
         // Bind variables to the prepared statement as parameters
         $stmt->bind_param("s", $param_username);
 
         // Set parameters
-        $param_username = trim($_SESSION['username']);
+        $param_username = $username;
 
         // Attempt to execute the prepared statement
         if ($stmt->execute()) {
@@ -48,6 +48,7 @@ function getUserId() {
 
         // Close statement
         $stmt->close();
+        return $userid;
     }
 }
 
@@ -67,11 +68,45 @@ function getUserId() {
 $meetingtitle = $meetingvenue = $isallday = $datestart = $dateend = $venue = $organiserid = $repeattype = "";
 // Errors
 $meetingtitle_err = $meetingvenue_err = $datestart_err = $dateend_err = $organiserid_err = "";
-$repeattype_err = $isallday_err = ""; // Invalid input only
+$repeattype_err = $isallday_err = $description_err = ""; // Invalid input only
 //$_POST["meetingtitle"]; //$_POST["meetingvenue"]; //$_POST["meetingallday"];
 //$_POST["meetingfrom"]; //$_POST["meetingto"]; //$_POST["meetingrepeat"];
 
-function validateOnPost() {
+if (isset($_POST["meetingtitle"]))
+{
+    validateOnPost($mysqli,$venues,$userid);
+}
+
+function get_venues($mysqli)
+{
+    $venues = array();
+    $sql = "select * from venue;";
+    
+    $result = $mysqli->query($sql);
+    if ($result->num_rows > 0)
+    {
+        while($row = $result->fetch_assoc()) 
+        {
+            $venues[$row['venue']] = $row['venueID'];
+        }
+    }
+    else
+    {
+        $venue['NIL'] = 0;
+    }
+
+    return $venues;
+}
+
+function display_venues($venues)
+{
+    foreach($venues as $key => $value)
+    {
+        echo "<option value=".$value.">".$key."</option>";
+    }
+}
+
+function validateOnPost($mysqli,$venues,$userid) {
     // Validate blanks
     if (empty(trim($_POST["meetingtitle"]))) {
         $meetingtitle_err = "Please enter a meeting title.";
@@ -79,18 +114,13 @@ function validateOnPost() {
     if (empty(trim($_POST["meetingvenue"]))) {
         $meetingvenue_err = "Please enter a meeting venue";
     }
-    //    if (empty(trim($_POST["meetingallday"]))) {
-    //        $isallday_err = "Please enter a username.";
-    //    }
     if (empty(trim($_POST["meetingfrom"]))) {
         $datestart_err = "Please enter the start date";
     }
     if (empty(trim($_POST["meetingto"]))) {
         $username_err = "Please enter the end date";
     }
-    //    if (empty(trim($_POST["meetingrepeat"]))) {
-    //        $repeattype_err = "Please enter a username.";
-    //    }
+    
 
     /*
      * Meeting data
@@ -100,30 +130,55 @@ function validateOnPost() {
             && empty($repeattype_err) && empty($password_err) && empty($confirm_password_err)) {
 
         // Prepare an insert statement
-        $sql = "INSERT INTO meeting (meetingtitle, isallday, datestart, dateend, venue, user_userid, repeattype) "
-                . "VALUES (?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO meeting (startDate, endDate, startTime, endTime, title, description, eventStatus, venue_venueid, user_userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         if ($stmt = $mysqli->prepare($sql)) {
             // Bind variables to the prepared statement as parameters
-            $stmt->bind_param("sssssss", $param_meetingtitle, $param_isallday, $param_datestart, $param_dateend, $param_venue, $param_organiser, $param_repeattype);
+            $stmt->bind_param("ssssssiii", $param_sdate, $param_edate, $param_stime, $param_etime, $param_title, $param_description, $param_eventStatus, $param_venueid, $param_userid);
+            
+            $param_eventStatus = 1;
+            $param_venueid = $_POST['meetingvenue'];
+            $param_userid = $userid;
+            
+            $start_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingfrom']);
+            $start_date = $start_datetime->format('Y-m-d');
+            $start_time = $start_datetime->format('h:i:s');
+            if ((substr($_POST['meetingfrom'], -2) == "AM" && substr($start_time, 0, 2) == "12") || (substr($_POST['meetingfrom'], -2) == "PM" && substr($start_time, 0, 2) != "12"))
+            {
+                $timestamp = strtotime($start_time) + 60*60*12;
+                $time = date('H:i:s', $timestamp);
+                $start_time = $time;
+            }
+            $param_sdate = $start_date;
+            $param_stime = $start_time;
+            
+            $end_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingto']);
+            $end_date = $end_datetime->format('Y-m-d');
+            $end_time = $end_datetime->format('h:i:s');
+            if ((substr($_POST['meetingto'], -2) == "AM" && substr($end_time, 0, 2) == "12") || (substr($_POST['meetingto'], -2) == "PM" && substr($end_time, 0, 2) != "12"))
+            {
+                $timestamp = strtotime($end_time) + 60*60*12;
+                $time = date('H:i:s', $timestamp);
+                $end_time = $time;
+            }
+            $param_edate = $end_date;
+            $param_etime = $end_time;
 
-            $param_meetingtitle = trim($_POST["meetingtitle"]);
-            $param_isallday = trim($_POST["meetingallday"]);
-            $param_datestart = trim($_POST["meetingfrom"]);
-            $param_dateend = trim($_POST["meetingto"]);
-            $param_venue = trim($_POST["meetingvenue"]);
-            $param_organiser = trim($userid);
-            $param_repeattype = trim($_POST["meetingrepeat"]);
+            $param_title = $_POST['meetingtitle'];
+            $param_description = $_POST['description'];
+            
+            
 
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 // Executed, pass to index, show meetings
                 // TO DO Get the id of the meeting, pass to other method
+                echo "<h1>Meeting created</h1>";
             } else {
                 // Stay on page, retry
                 echo "Something went wrong. Please try again later.";
             }
-        }
+        } else {echo "unable to prepare statement";}
 
         // Close statement
         $stmt->close();
@@ -132,6 +187,7 @@ function validateOnPost() {
     /*
      * Participants
      */
+    /*
     $participantids = $_POST["participantids"];
 
     $meetingid = "";
@@ -160,7 +216,7 @@ function validateOnPost() {
 
         // Close statement
         $stmt->close();
-    }
+    }*/
 }
 ?>
 
@@ -189,7 +245,7 @@ function validateOnPost() {
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">Meeting Details</div>
                 <div class="panel-body">
-                    <form class="form-horizontal row-border" action="#" name="createMeeting" id="createMeetingForm">
+                    <form class="form-horizontal row-border" action="createMeeting.php" name="createMeeting" id="createMeetingForm" method="post">
 
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="meetingtitle">Title</label>
@@ -202,20 +258,10 @@ function validateOnPost() {
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="meetingvenue">Venue</label>
                             <div class="col-md-10">
-                                <input class="form-control" type="text" name="meetingvenue" placeholder="Meeting Venue">
+                                <select id="repeatSelect" name="meetingvenue" class="form-control">
+                                    <?php display_venues($venues); ?>
+                                </select>
                                 <span class="help-block"><?php echo $meetingvenue_err; ?></span>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="alldaycheckboxes">All Day</label>
-                            <div class="col-md-10">
-                                <label class="checkbox-inline" for="alldaycheckboxes-0">
-                                    <input type="checkbox" name="meetingallday" id="alldaycheckboxes-0" value="true">
-                                    All Day Event
-                                </label>
-                                <span class="help-block"><?php echo $isallday_err; ?></span>
                             </div>
                         </div>
 
@@ -230,19 +276,13 @@ function validateOnPost() {
                                 <span class="help-block"><?php echo $dateend_err; ?></span>
                             </div>
                         </div>
-
+                        
                         <div class="form-group">
-                            <label class="col-md-2 control-label" for="repeatSelect">Repeat</label>
+                            <label class="col-md-2 control-label" for="description">Description</label>
                             <div class="col-md-10">
-                                <select id="repeatSelect" name="meetingrepeat" class="form-control">
-                                    <option value="none">None</option>
-                                    <option value="daily">Daily</option>
-                                    <option value="weekly">Weekly</option>
-                                    <option value="yearly">Yearly</option>
-                                    <option value="custom">Custom</option>
-                                </select>
+                                <input class="form-control" id=description type="text" name="description" placeholder="Description of Meeting">            
+                                <span class="help-block"><?php echo $description_err; ?></span>
                             </div>
-                            <span class="help-block"><?php echo $repeattype_err; ?></span>
                         </div>
 
                         <div class="form-group">
