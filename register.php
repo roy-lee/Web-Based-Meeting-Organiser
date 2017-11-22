@@ -2,6 +2,7 @@
 // Include config file
 require_once 'config.php';
 require_once 'send_email.php';
+require_once 'fields_validation.php';
 
 // Define variables and initialize with empty values
 $username = $password = $confirm_password = $full_name = $email = "";
@@ -9,176 +10,54 @@ $username_err = $password_err = $confirm_password_err = $full_name_err = $email_
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-
-    // Validate username
-    if(empty(trim($_POST["username"]))){
-        $username_err = "Please enter a username.";
-    } elseif (strlen(trim($_POST['username'])) < 6)
+    
+    $username_err = validate_username($mysqli);
+    if(empty($username_err))
     {
-        $username_err = "Username must have at least 6 characters.";
+        $username = trim($_POST['username']);
     }
-    elseif (strlen(trim($_POST['username'])) > 20)
+    $password_err = validate_password();
+    if(empty($password_err))
     {
-        $username_err = "Username must not exceed 20 characters.";
+        $password = trim($_POST['new_password']);
     }
-    elseif (preg_match('/[^A-Za-z0-9]/', trim($_POST['username'])))
+    $confirm_password_err = confirm_passwords();
+    if(empty($confirm_password_err))
     {
-        $username_err = "Username must not contain symbols.";
-    } else{
-        // Prepare a select statement
-        $sql = "SELECT userid FROM users WHERE username = ?";
-
-        if($stmt = $mysqli->prepare($sql)){
-            // Bind variables to the prepared statement as parameters
-            $stmt->bind_param("s", $param_username);
-
-            // Set parameters
-            $param_username = trim($_POST["username"]);
-
-            // Attempt to execute the prepared statement
-            if($stmt->execute()){
-                // store result
-                $stmt->store_result();
-
-                if($stmt->num_rows >= 1){
-                    $username_err = "This username is already taken.";
-                } else{
-                    $username = trim($_POST["username"]);
-                }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
-        }
-
-        // Close statement
-        $stmt->close();
+        $confirm_password = trim($_POST['confirm_password']);
     }
 
-    // Validate password
-    if(empty(trim($_POST['password']))){
-        $password_err = "Please enter a password.";
-    } elseif(strlen(trim($_POST['password'])) < 8){
-        $password_err = "Password must have at least 8 characters.";
-    }
-    elseif (strlen(trim($_POST['password']))> 20 )
+    $full_name_err = validate_full_name();
+    if(empty($full_name_err))
+
     {
-        $password_err = "Password must not exceed 20 characters.";
-    }else{
-        $alpha = $numer = false;
-        $pass_buff = $_POST['password'];
-        for ($i=0; $i<strlen($pass_buff);$i++)
-        {
-            if ($alpha && $numer)
-            {
-                break;
-            }
-            else
-            {
-                if(ctype_alpha($pass_buff[$i]))
-                {
-                    $alpha = true;
-                }
-                elseif(is_numeric($pass_buff[$i]))
-                {
-                    $numer = true;
-                }
-            }
-        }
-        if ($alpha && $numer)
-        {
-            $password = trim($_POST['password']);
-        }
-        else
-        {
-            $password_err = "Password must have at least an alphabet and a number.";
-        }
+        $full_name = trim($_POST['full_name']);
     }
 
-    // Validate confirm password
-    if(empty(trim($_POST["confirm_password"]))){
-        $confirm_password_err = 'Please confirm password.';
-    } else{
-        if($password != trim($_POST['confirm_password'])){
-            $confirm_password_err = 'Passwords did not match.';
-        }
-        else{
-            $confirm_password = trim($_POST['confirm_password']);
-        }
-    }
-
-    // Validate full name
-    if(empty(trim($_POST["full_name"]))){
-        $full_name_err = 'Please enter your full name.';
-    }
-    elseif (strlen($_POST['full_name']) > 255)
+    $email_err = validate_email("register",$mysqli,"");
+    if(empty($email_err))
     {
-        $full_name_err = "Full name must not exceed 255 characters.";
-    }
-    else{
-        if (preg_match('/[^A-Za-z]/', $full_name))
-        {
-            $full_name_err = "Full name must only contain alphabets.";
-        }
-        else
-        {
-            $full_name = trim($_POST['full_name']);
-        }
-    }
+        $email = trim($_POST['email']);
 
-    if(empty(trim($_POST["email"]))){
-        $confirm_password_err = 'Please enter your email.';
-    }
-    elseif (strlen($_POST['email']) > 255)
-    {
-        $email_err = "Email must not exceed 255 characters.";
-    }else{
-        if (!filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL))
-        {
-          $email_err = "Email address is not valid.";
-        }
-        else{
-            $sql = "SELECT userid FROM users WHERE email = ?";
-
-            if($stmt = $mysqli->prepare($sql)){
-                // Bind variables to the prepared statement as parameters
-                $stmt->bind_param("s", $param_email);
-
-                // Set parameters
-                $param_email = trim($_POST["email"]);
-
-                // Attempt to execute the prepared statement
-                if($stmt->execute()){
-                    // store result
-                    $stmt->store_result();
-
-                    if($stmt->num_rows >= 1){
-                        $email_err = "This email is already registered.";
-                    } else{
-                        $email = trim($_POST['email']);
-                    }
-                } else{
-                    echo "Oops! Something went wrong. Please try again later.";
-                }
-            }
-        }
     }
 
     // Check input errors before inserting in database
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err) && empty($full_name_err) && empty($email_err)){
 
         // Prepare an insert statement
-        $sql = "INSERT INTO users (username, password, fullname, email, accountState) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO user (username, password, fullname, email, verified) VALUES (?, ?, ?, ?, ?)";
 
         if($stmt = $mysqli->prepare($sql)){
             // Bind variables to the prepared statement as parameters
-            $stmt->bind_param("sssss", $param_username, $param_password,$param_fullname,$param_email,$param_state);
+            $stmt->bind_param("sssss", $param_username, $param_password,$param_fullname,$param_email,$param_verify);
 
             // Set parameters
             $param_username = $username;
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
             $param_fullname = $full_name;
             $param_email = $email;
-            $param_state = "no";
+
+            $param_verify = "no";
 
             $subject = 'Verification for 1004 Account';
             $message = "Hi $full_name,<br>
@@ -186,9 +65,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             You must now validate your account by clicking the link below<br>
             http://localhost/verification.php?id=$username&mode=verify<br><br>
             If you did not register for this account, click the link below<br>
-            http://localhost/verification.php?id=$username&mode=delete<br>
+
+            http://localhost/ICT1004/Project2_roy/verification.php?id=$username&mode=delete<br><br>
+            Do not reply to this email.<br>
             Thanks.";
-            $result = send_email($email,$subject,$message,false);
+            $result = send_email($email,$subject,$message,true);
 
             if ($result == true)
             {
@@ -204,9 +85,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             else {
                 $email_err = "Unable to send email to this email address.";
             }
-        }
         // Close statement
         $stmt->close();
+        }
+        
     }
 
     // Close connection
@@ -221,6 +103,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <title>Sign Up - Meeting Organiser</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+    <script src="js/fields_validation.js" type="application/javascript"></script>
     <style type="text/css">
         body{ font: 14px sans-serif; }
         .form-group > .btn {width: 49%; display: inline-block; }
@@ -232,7 +115,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="login-panel panel panel-default">
               <div class="panel-heading">Sign Up</div>
               <div class="panel-body">
-                <form role="form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <form role="form" name="register" onsubmit="return validate_register()" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                   <fieldset>
                     <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
                         <label>Username:<sup>*</sup></label>
@@ -242,12 +125,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                     <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
                         <label>Password:<sup>*</sup></label>
-                        <input type="password" name="password" class="form-control" value="<?php echo $password; ?>" required>
+                        <input type="password" name="new_password" class="form-control" required>
                         <span class="help-block"><?php echo $password_err; ?></span>
                     </div>
                     <div class="form-group <?php echo (!empty($confirm_password_err)) ? 'has-error' : ''; ?>">
                         <label>Confirm Password:<sup>*</sup></label>
-                        <input type="password" name="confirm_password" class="form-control" value="<?php echo $confirm_password; ?>" required>
+                        <input type="password" name="confirm_password" class="form-control" required>
                         <span class="help-block"><?php echo $confirm_password_err; ?></span>
                     </div>
                     <div class="form-group <?php echo (!empty($full_name_err)) ? 'has-error' : ''; ?>">
@@ -261,7 +144,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <span class="help-block"><?php echo $email_err; ?></span>
                     </div>
                     <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input type="submit" class="btn btn-primary" value="Register">
                         <input type="reset" class="btn btn-default" value="Reset">
                     </div>
                     <p>Already have an account? <a href="login.php">Login here</a>.</p>

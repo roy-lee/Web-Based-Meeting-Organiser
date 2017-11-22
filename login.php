@@ -26,7 +26,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT username, password, accountState FROM users WHERE username = ?";
+        $sql = "SELECT username, password, verified FROM user WHERE username = ?";
 
         if($stmt = $mysqli->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -43,17 +43,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Check if username exists, if yes then verify password
                 if($stmt->num_rows == 1){
                     // Bind result variables
-                    $stmt->bind_result($username, $hashed_password,$state);
+                    $stmt->bind_result($username, $hashed_password,$verified);
                     if($stmt->fetch()){
-                        if(password_verify($password, $hashed_password) && $state == "yes"){
+                        if(password_verify($password, $hashed_password) && $verified == "yes"){
                             /* Account is verfied and Password is correct, so start a new session and
                             save the username to the session */
                             session_start();
                             $_SESSION['username'] = $username;
-                            $_SESSION['userID'] = $userID;
+
+                            $_SESSION['role'] = $_POST['role'];
+
                             header("location: index.php");
                         } else{
-                            if ($state != "yes")
+                            if ($verified != "yes")
                             {
                                 // Display an error message if account is not yet verified
                                 $username_err = "This account is not yet verified.";
@@ -88,7 +90,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta charset="UTF-8">
     <title>Login - Meeting Organiser</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-		<link href="css/styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <script src="js/fields_validation.js" type="application/javascript"></script>
     <style type="text/css">
         body{ font: 14px sans-serif; }
     </style>
@@ -99,21 +102,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         				<div class="login-panel panel panel-default">
         					<div class="panel-heading">Log in</div>
         					<div class="panel-body">
-        						<form role="form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        						<form role="form" name="login" onsubmit="return validate_login()" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         							<fieldset>
                         <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
                             <label>Username:<sup>*</sup></label>
-                            <input type="text" autofocus="" placeholder="username" name="username"class="form-control" value="<?php echo $username; ?>">
+                            <input type="text" autofocus="" placeholder="username" name="username"class="form-control" value="<?php echo $username; ?>" required>
                             <span class="help-block"><?php echo $username_err; ?></span>
                         </div>
 
                         <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
                             <label>Password:<sup>*</sup></label>
-                            <input type="password" name="password" class="form-control">
+                            <input type="password" name="password" class="form-control" required>
                             <span class="help-block"><?php echo $password_err; ?></span>
                         </div>
                         <div class="form-group">
-                            <input type="submit" class="btn btn-primary" value="Submit">
+                            <label>Role:</label>
+                            <input type="radio" name="role" id="participant" value="participant" checked='checked'><label for="participant">Participant</label>
+                            <input type="radio" name="role" id="organiser" value="organiser"><label for="organiser">Organiser</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary" value="Log In">
                         </div>
                         <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
                                     </fieldset>

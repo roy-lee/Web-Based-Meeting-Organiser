@@ -9,7 +9,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
         $id = $_GET['id'];
         $mode = $_GET['mode'];
         
-        $sql = "select accountState from users where username = ?";
+        $sql = "select verified from user where username = ?";
 
         if($stmt = $mysqli->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -28,18 +28,18 @@ if(isset($_GET['id']) && isset($_GET['mode']))
                     $stmt->fetch();
                     if ($verified == "yes")
                     {
-                        echo "This account is already verified and no action will be taken.";
+                        echo "This account is already verified and no action will be taken. <a href='login.php'>Proceed to login now</a>";
                     }
                     else
                     {
                         if ($mode == "verify")
                         {
-                            $sql = "UPDATE users SET accountState = 'yes' WHERE username = '$id';";
+                            $sql = "UPDATE user SET verified = 'yes' WHERE username = '$id';";
                             if ($stmt = $mysqli->prepare($sql))
                             {
                                 if($stmt->execute()){
                                     // Redirect to login page
-                                    echo "You are successfully verified. You can proceed to the login page now";
+                                    echo "You are successfully verified. <a href='login.php'>Proceed to login now</a>";
                                 } else{
                                     echo "Something went wrong. Please try again later.";
                                 }
@@ -51,7 +51,7 @@ if(isset($_GET['id']) && isset($_GET['mode']))
                         }
                         elseif ($mode == "delete")
                         {
-                            $sql = "DELETE FROM users where username = '$id' AND accountState = 'no';";
+                            $sql = "DELETE FROM user where username = '$id' AND verified = 'no';";
                             if ($stmt = $mysqli->prepare($sql))
                             {
                                 if($stmt->execute()){
