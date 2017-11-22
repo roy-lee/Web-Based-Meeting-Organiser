@@ -43,7 +43,6 @@ if(isset($_POST['update_butt']))
 	mysqli_query($conn,$sql2);
 	header("location:event-details.php?id=$id");
 
-
 }
 if(isset($_POST['editButt']))
 {
@@ -66,6 +65,7 @@ if(isset($_GET['edit']) && !empty($_GET['id']))
 {
 	//show the edit page
 ?>
+
 <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
   <div class="row">
     <ol class="breadcrumb">
@@ -214,6 +214,7 @@ else
                         <div><em class="fa fa-map-o">&nbsp;</em> <?php echo $venue ?></div>
                         <div><em class="fa fa-user">&nbsp;</em> <?php echo $username?></div>
                         <div><em class="fa fa-envelope-o">&nbsp;</em> <?php echo $email?></div>
+
                         <hr>
                         <h3>Join this Event</h3>
                         <br>
@@ -221,6 +222,7 @@ else
                           <input type="submit" value='Join' name='editButt' class="btn btn-md btn-primary">
                           <input type="submit" value='Leave' name='delButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
             						</form>
+
                         <hr>
                         <h3>Amend this event</h3>
                         <br>
