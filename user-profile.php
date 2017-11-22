@@ -27,7 +27,7 @@ else {
                 if ($stmt->fetch())
                 {
                     $user_email = $email;
-                    $user_fullname = $fullName;
+                    $user_fullname = $fullname;
                     $user_currentpass = $password;
                 }
             }
