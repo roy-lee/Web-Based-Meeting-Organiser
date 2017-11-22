@@ -99,7 +99,7 @@ include("includes/header.inc.php");
                       <p>".$row['description']."</p>
                       <hr>
                       <div><p class='pull-left'>Organised by: <br>".$row['fullName']."</p>
-                      <button type='button' class='btn btn-md btn-primary pull-right'><a href='#'>Details</a></button>
+                      <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-primary pull-right'>Details</button></a>
                     </div>
                     </div>
                   </div>

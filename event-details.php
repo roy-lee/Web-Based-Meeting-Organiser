@@ -4,7 +4,7 @@ $currentPage = 'event';
 include("includes/header.inc.php");
 $id = @$_GET['id'];
 // Comment away placeholder ID. For testing purpose
-$id = 1;
+// $id = 1;
 
 $inner_join = "Select mt.*, usr.*, ven.* FROM meeting mt INNER JOIN venue ven on mt.venue_venueID = ven.VenueID LEFT JOIN user usr on mt.user_UserID = usr.userID where mt.meetingID='$id' and mt.eventStatus = '1'";
 //$description = "Select * from meeting where meetingID=$id";
@@ -16,9 +16,12 @@ $row = mysqli_fetch_assoc($results);
 $title = $row['title'];
 $description = $row['description'];
 $start_date = $row['startDate'];
+$end_date = $row['endDate'];
 $start_time = $row['startTime'];
+$end_time = $row['endTime'];
 $venue 		= $row['venue'];
 $username   = $row['username'];
+$fullName   = $row['fullName'];
 $email 		= $row['email'];
 $userid     = $row['userID'];
 
@@ -27,14 +30,16 @@ if(isset($_POST['update_butt']))
 	// if update button is press update the table
 	$venue = $_POST['venue_tb'];
 	$start_time = $_POST['starttime_tb'];
-	$start_date = $_POST['startdate_tb'];
+	$end_time = $_POST['endtime_tb'];
+  $start_date = $_POST['startdate_tb'];
+	$end_date = $_POST['enddate_tb'];
 	$desc		= $_POST['descrip_tb'];
 	$title 		= $_POST['title_tb'];
 
 	// validate if need to//
 
 	mysqli_query($conn,"Update venue set venue ='$venue' where venueID=(Select venue_venueID from meeting where meetingID='$id')");
-	$sql2 = "Update meeting set startTime='$start_time', startDate='$start_date', title='$title', description='$desc' where meetingID='$id'";
+	$sql2 = "Update meeting set startTime='$start_time', endTime='$end_time', startDate='$start_date', endDate='$end_date', title='$title', description='$desc' where meetingID='$id'";
 	mysqli_query($conn,$sql2);
 	header('location:event-details.php');
 
@@ -61,38 +66,110 @@ if(isset($_GET['edit']) && !empty($_GET['id']))
 {
 	//show the edit page
 ?>
-	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
-       <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Edit Event Details</h1>
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="#">
+        <em class="fa fa-home"></em>
+      </a></li>
+      <li class="active">Edit Event</li>
+    </ol>
+  </div><!--/.row-->
+
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">Edit Event Details</h1>
+    </div>
+  </div><!--/.row-->
+
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix"><?php echo $title;?> Event Description</div>
+        <div class="panel-body">
+
+          <form class="form-horizontal row-border" action='' method='post'>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Event Name</label>
+              <div class="col-md-10">
+                <input type="text" name='title_tb' value='<?php echo $title;?>' class="form-control">
+              </div>
             </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Organiser</label>
+              <div class="col-md-10">
+                <input type="text" disabled="disabled" readonly="" value='<?php echo $fullName; ?>' class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Organiser Email</label>
+              <div class="col-md-10">
+                <input type="text" disabled="disabled" readonly="" value='<?php echo $email; ?>' class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Venue</label>
+              <div class="col-md-10">
+                <select class="form-control input-lg">
+                  <option value='<?php echo $venue; ?>' name='event_tb'><?php echo $venue; ?></option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Start Date</label>
+              <div class="col-md-4">
+                <select class="form-control input-lg">
+                  <option value='<?php echo $start_date; ?>' name='startdate_tb'><?php echo $start_date; ?></option>
+                </select>
+              </div>
+              <label class="col-md-2 control-label">End Date</label>
+              <div class="col-md-4">
+                <select class="form-control input-lg">
+                  <option value='<?php echo $end_date; ?>' name='enddate_tb'><?php echo $end_date; ?></option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Start Time</label>
+              <div class="col-md-4">
+                <select class="form-control input-lg">
+                  <option value="<?php echo $start_time; ?>" name='starttime_tb'><?php echo $start_time; ?></option>
+                </select>
+              </div>
+              <label class="col-md-2 control-label">End Time</label>
+              <div class="col-md-4">
+                <select class="form-control input-lg">
+                  <option value="<?php echo $end_time; ?>" name='endtime_tb'><?php echo $end_time; ?></option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Description</label>
+              <div class="col-md-10">
+                <textarea type="text" rows="10" cols='50' class="form-control" name='descrip_tb'><?php echo htmlspecialchars($description); ?></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label"></label>
+              <div class="col-md-10">
+                <input type="submit" class="btn btn-md btn-primary" name='update_butt' value='Update'>
+              </div>
+            </div>
+
+          </form>
         </div>
-        <!--/.row-->
-        <div class="row">
-            <div class="col-lg-6 col-md-12">
-                <div class="panel panel-info">
-					<form action='' method='post'>
-                    <div class="panel-heading"><input class='no_border' type='text' name='title_tb' value='<?php echo $title;?>'>
-                    </div>
-                    <div class="panel-body event-description">
+      </div>
+    </div>
+  </div><!--/.row-->
 
-                        <p>
-
-                            <h3><?php echo $title.' Description'; ?></h3>
-							<div><em class="fa fa-calendar-check-o">&nbsp;</em><input class='no_border' type='text' id='datepicker' name='startdate_tb' value ='<?php echo $start_date; ?>'>
-							<div><em class="fa fa-clock-o">&nbsp;</em><input type='text' id='timepicker' class='time' value='<?php echo substr($start_time,0,8); ?>' name='starttime_tb'></div>
-							<div><em class="fa fa-map-o">&nbsp;</em><input class='no_border' type='text' name='venue_tb' value ='<?php echo $venue; ?>'></div>
-							<div><em class="fa fa-user">&nbsp;</em> <?php echo $username; ?></div>
-							<div><em class="fa fa-envelope-o">&nbsp;</em> <?php echo $email;?></div>
-							<textarea rows="4" cols='50' name='descrip_tb'><?php echo htmlspecialchars($description); ?></textarea>
-							<div><input type="submit" class="btn btn-md btn-primary" name='update_butt' value='Update'></div>
-							</form>
-
-                    </div>
-                </div>
-            </div>
-		</div>
-	</div>
 <?php
 }
 else
@@ -138,6 +215,13 @@ else
                         <div><em class="fa fa-user">&nbsp;</em> <?php echo $username?></div>
                         <div><em class="fa fa-envelope-o">&nbsp;</em> <?php echo $email?></div>
                         <hr>
+                        <h3>Join this Event</h3>
+                        <br>
+            						<form action='' method ='POST'>
+                          <input type="submit" value='Join' name='editButt' class="btn btn-md btn-primary">
+                          <input type="submit" value='Leave' name='delButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
+            						</form>
+                        <hr>
                         <h3>Amend this event</h3>
                         <br>
             						<form action='' method ='POST'>
@@ -165,7 +249,7 @@ else
                         <div class="tab-content">
                             <div class="tab-pane fade in active" id="tab1">
                                 <div class="panel panel-default">
-                                    <div class="panel-heading">Participants</div>
+
                                     <div class="panel-body btn-margins">
                                       <div class="col-lg-12">
                                         <div class="panel panel-default">
