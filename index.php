@@ -76,7 +76,7 @@ include("includes/header.inc.php");
           <div class="row no-padding"><em class="fa fa-xl fa-check-square-o color-red"></em>
             <div class="large">
             <?php
-            $query = "SELECT COUNT(*) AS SUM FROM meeting_participants where user_userID = '1' ";
+            $query = "SELECT COUNT(*) AS SUM FROM meeting_participants mp INNER JOIN meeting mt ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '1' and mt.eventStatus='1'";
             $result = mysqli_query($mysqli,$query);
             $rows = mysqli_fetch_assoc($result);
             echo $rows['SUM'];
@@ -113,8 +113,8 @@ include("includes/header.inc.php");
                   <div class='timeline-panel'>
                     <div class='timeline-heading'>
                     <div class='col-xs-2 col-md-2 date pull-right'>
-                      <div class='large'>30</div>
-                      <div class='text-muted'>Jun</div>
+                      <div class='large'>".getdateonly($row['startDate'])."</div>
+                      <div class='text-muted'>".numtomonth($row['startDate'])."</div>
                     </div>
                       <h4 class='timeline-title'>".$row['title']."</h4>
 
@@ -169,7 +169,7 @@ include("includes/header.inc.php");
           <?php
           $sqlJoinedEvents = "SELECT * FROM meeting_participants mp
                               INNER JOIN meeting mt
-                              ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '1'";
+                              ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '1' and mt.eventStatus='1'";
 
           // $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1'";
           $resultsJoinedEvents = mysqli_query($conn,$sqlJoinedEvents);
@@ -177,12 +177,35 @@ include("includes/header.inc.php");
           {
             echo "
 
+            <li>
+              <div class='timeline-badge primary'><em class='glyphicon glyphicon-calendar'></em></div>
+              <div class='timeline-panel'>
+                <div class='timeline-heading'>
+                <div class='col-xs-2 col-md-2 date pull-right'>
+                  <div class='large'>30</div>
+                  <div class='text-muted'>Jun</div>
+                </div>
+                  <h4 class='timeline-title'>".$row['title']."</h4>
+
+                </div>
+                <div class='timeline-body'>
+                  <p>".$row['description']."</p>
+                  <hr>
+                  <div><p class='pull-left'>Organised by: <br>".$row['fullName']."</p>
+                  <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-primary pull-right'>Details</button></a>
+                </div>
+                </div>
+              </div>
+            </li>
+
+
+
             <div class='article border-bottom'>
               <div class='col-xs-12'>
                 <div class='row'>
                   <div class='col-xs-2 col-md-2 date'>
                     <div class='large'>30</div>
-                    <div class='text-muted'>Jun</div>
+                    <div class='text-muted'> ".$row['']."Jun</div>
                   </div>
                   <div class='col-xs-10 col-md-10'>
                     <h4><a href='#'>".$row['title']."</a></h4>
