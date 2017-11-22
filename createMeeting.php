@@ -12,74 +12,13 @@ $organiserusername = $_SESSION['username'];
  *
  * ---------------  */
 
+function onPageRun() {
+    getUserId();
+}
+
+#onPageRun();
 $userid = getUserId($mysqli,$organiserusername);
 $venues = get_venues($mysqli);
-$results = get_users($mysqli,$organiserusername);
-$user_fullnames = $results[0];
-$user_emails = $results[1];
-
-function get_venues($mysqli)
-{
-    $venues = array();
-    $sql = "select * from venue;";
-    
-    $result = $mysqli->query($sql);
-    if ($result->num_rows > 0)
-    {
-        while($row = $result->fetch_assoc()) 
-        {
-            $venues[$row['venue']] = $row['venueID'];
-        }
-    }
-    else
-    {
-        $venue['NIL'] = 0;
-    }
-
-    return $venues;
-}
-
-function get_users($mysqli,$organiser)
-{
-    $users_fullnames = array();
-    $users_emails = array();
-    
-    $sql = "select * from user where username != '".$organiser."';";
-    
-    $result = $mysqli->query($sql);
-    if ($result->num_rows >0)
-    {
-        while($row = $result->fetch_assoc())
-        {
-            $users_fullnames[$row['userID']] = $row['fullName'];
-            $users_emails[$row['userID']] = $row['email'];
-        }
-    }
-    else
-    {
-        $users_fullname[0] = "NIL";
-        $users_emails[0] = "NIL";
-    }
-    
-    $results = array($users_fullnames,$users_emails);
-    return $results;
-}
-
-function display_fullnames($fullnames)
-{
-    foreach($fullnames as $key => $value)
-    {
-        echo "<option value=".$key.">".$value."</option>";
-    }
-}
-
-function display_venues($venues)
-{
-    foreach($venues as $key => $value)
-    {
-        echo "<option value=".$value.">".$key."</option>";
-    }
-}
 
 function getUserId($mysqli,$username) {
     // Prepare a select statement
@@ -112,6 +51,14 @@ function getUserId($mysqli,$username) {
         return $userid;
     }
 }
+
+/* ---------------
+ *
+ * On page run
+ *
+ * ---------------  */
+
+
 /* ---------------
  *
  * Post Validation
@@ -127,11 +74,39 @@ $repeattype_err = $isallday_err = $description_err = ""; // Invalid input only
 
 if (isset($_POST["meetingtitle"]))
 {
-    validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$organiserusername);
+    validateOnPost($mysqli,$venues,$userid);
 }
 
-function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$organiserusername) {
+function get_venues($mysqli)
+{
+    $venues = array();
+    $sql = "select * from venue;";
 
+    $result = $mysqli->query($sql);
+    if ($result->num_rows > 0)
+    {
+        while($row = $result->fetch_assoc())
+        {
+            $venues[$row['venue']] = $row['venueID'];
+        }
+    }
+    else
+    {
+        $venue['NIL'] = 0;
+    }
+
+    return $venues;
+}
+
+function display_venues($venues)
+{
+    foreach($venues as $key => $value)
+    {
+        echo "<option value=".$value.">".$key."</option>";
+    }
+}
+
+function validateOnPost($mysqli,$venues,$userid) {
     // Validate blanks
     if (empty(trim($_POST["meetingtitle"]))) {
         $meetingtitle_err = "Please enter a meeting title.";
@@ -192,53 +167,13 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
             $param_title = $_POST['meetingtitle'];
             $param_description = $_POST['description'];
 
+
+
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
-                /*
-                 * Participants
-                 */
-                $pids = $_POST['participants'];
-
-                $sql = "select max(meetingID) from meeting where user_userid = $userid;";
-                $result = $mysqli->query($sql);
-                if($result->num_rows > 0)
-                {
-                    $meetingid = $result->fetch_assoc()['max(meetingID)'];
-
-                    $sql = "INSERT INTO meeting_participants (meeting_meetingID, meeting_venue_venueID, meeting_user_userID, user_userID) VALUES (?,?,?,?);";
-
-                    if ($stmt = $mysqli->prepare($sql))
-                    {
-                        $stmt->bind_param("iiii", $param_mmid, $param_mvid, $param_uuid, $param_uid);
-                        $param_mmid = $meetingid;
-                        $param_mvid = $_POST['meetingvenue'];
-                        $param_uuid = $userid;
-
-                        require_once "send_email.php";
-                        $subject = "Meeting Invitation by $organiserusername";
-                        for($i = 0; $i < count($pids); $i++)
-                        {
-                            $pid = $pids[$i];
-                            $param_uid = $pid;
-                            if ($stmt->execute())
-                            {
-                                $p_fullname = $user_fullnames[$pid];
-                                $p_email = $user_emails[$pid];
-                                $message = "Hi $p_fullname,<br>
-                                You are invited to a meeting on ".$_POST['meetingfrom']."<br>
-                                You can view and edit more details by logging into our website, Event Details page.<br><br>
-                                
-                                Do not reply to this email.<br>
-                                Thanks.";
-                                $result = send_email($p_email,$subject,$message,true);
-                            }
-                            else {
-                                // Stay on page, retry
-                                echo "Something went wrong. Please try again later.";
-                            }
-                        }
-                    } else {echo "unable to prepare statement";}
-                }
+                // Executed, pass to index, show meetings
+                // TO DO Get the id of the meeting, pass to other method
+                echo "<h1>Meeting created</h1>";
             } else {
                 // Stay on page, retry
                 echo "Something went wrong. Please try again later.";
@@ -248,6 +183,40 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
         // Close statement
         $stmt->close();
     }
+
+    /*
+     * Participants
+     */
+    /*
+    $participantids = $_POST["participantids"];
+
+    $meetingid = "";
+
+    // Insert participants into participant table
+    foreach ($participantids as $pid) {
+        // Prepare an insert statement
+        $sql = "INSERT INTO participants (meeting_meetingid, user_userid) VALUES (?, ?)";
+
+        if ($stmt = $mysqli->prepare($sql)) {
+            // Bind variables to the prepared statement as parameters
+            $stmt->bind_param("ss", $param_meetingid, $param_participantid);
+
+            // Set parameters
+            $param_meetingid = $meetingid;
+            $param_participantid = $pid;
+
+            // Attempt to execute the prepared statement
+            if ($stmt->execute()) {
+                // On success
+                header("location: index.php");
+            } else {
+                echo "Something went wrong. Please try again later.";
+            }
+        }
+
+        // Close statement
+        $stmt->close();
+    }*/
 }
 ?>
 
@@ -313,16 +282,6 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                             <div class="col-md-10">
                                 <input class="form-control" id=description type="text" name="description" placeholder="Description of Meeting">
                                 <span class="help-block"><?php echo $description_err; ?></span>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="participants">Participants</label>
-                            <div class="col-md-10">
-                                <select id="participants" name="participants[]" class="form-control" multiple>
-                                    <?php display_fullnames($user_fullnames); ?>
-                                </select>
-                                <span class="help-block"><?php echo "Click and drag or Ctl + Click to conduct multiple selection"; ?></span>
                             </div>
                         </div>
 
