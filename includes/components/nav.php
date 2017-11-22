@@ -3,7 +3,7 @@
 session_start();
 
 // If session variable is not set it will redirect to login page
-if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
+if(!isset($_SESSION['username']) || empty($_SESSION['username']) || !isset($_SESSION['role']) || empty($_SESSION['role'])){
   header("location: login.php");
   exit;
 }
@@ -16,7 +16,10 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span></button>
+
 					<a class="navbar-brand" href="#"><span>Meeting</span> Organiser</a>
+                    <a href="./user-profile.php" class='navbar-brand pull-right'><span> | User</span> Profile | </a>
+
 				</div>
 			</div><!-- /.container-fluid -->
 		</nav>
@@ -27,7 +30,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 					<img src="../../img/profile-pic-2.jpg" width="50" class="img-responsive" alt="">
 				</div>
 				<div class="profile-usertitle">
-					<div class="profile-usertitle-name"><?php echo $_SESSION['username']; ?></div>
+					<div class="profile-usertitle-name"><?php echo $_SESSION['username']." (".$_SESSION['role'].")"; ?></div>
 					<div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
 				</div>
 				<div class="clear"></div>

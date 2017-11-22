@@ -39,11 +39,13 @@ function insertVenue() {
             // Set parameters
             $param_username = trim($_POST["username"]);
 
+
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 $venueID = $stmt->insert_id;
             } else {
                 echo "Oops! Something went wrong. Please try again later.";
+
             }
         }
 
@@ -51,8 +53,18 @@ function insertVenue() {
         $stmt->close();
     }
 
+}
+
+/* ---------------
+ *
+ * On page run
+ *
+ * ---------------  */
+
+
     return $venueid;
 }
+
 
 function validateBlanks() {
 
