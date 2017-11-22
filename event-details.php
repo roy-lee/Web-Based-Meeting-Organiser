@@ -44,6 +44,19 @@ if(isset($_POST['update_butt']))
 	header("location:event-details.php?id=$id");
 
 }
+if(isset($_POST['joinButt']))
+{
+	$sql = "IINSERT INTO meeting_participants (meeting_meetingID,meeting_venue_venueID,meeting_user_userID,user_userID) VALUES($id,$venue,$userid,$username);";
+	if(mysqli_query($conn,$sql))
+	{
+
+		header('location:index.php');
+	}
+	// joins the event, redirect user to the same page
+	header("location:/event-details.php?edit&id=$id");
+
+}
+
 if(isset($_POST['editButt']))
 {
 	// edit the event, redirect user to the same page and edit it from there
@@ -219,8 +232,8 @@ else
                         <h3>Join this Event</h3>
                         <br>
             						<form action='' method ='POST'>
-                          <input type="submit" value='Join' name='editButt' class="btn btn-md btn-primary">
-                          <input type="submit" value='Leave' name='delButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
+                          <input type="submit" value='Join' name='joinButt' class="btn btn-md btn-primary">
+                          <input type="submit" value='Leave' name='leaveButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
             						</form>
 
                         <hr>
