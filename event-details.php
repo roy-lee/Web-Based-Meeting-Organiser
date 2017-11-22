@@ -1,4 +1,5 @@
 <?php
+ob_start( );
 $currentPage = 'event';
 include("includes/header.inc.php");
 $id = @$_GET['id'];
@@ -20,6 +21,82 @@ $venue 		= $row['venue'];
 $username   = $row['username'];
 $email 		= $row['email'];
 $userid     = $row['userID'];
+
+if(isset($_POST['update_butt']))
+{
+	// if update button is press update the table
+	$venue = $_POST['venue_tb'];
+	$start_time = $_POST['starttime_tb'];
+	$start_date = $_POST['startdate_tb'];
+	$desc		= $_POST['descrip_tb'];
+	$title 		= $_POST['title_tb'];
+
+	// validate if need to//
+
+	mysqli_query($conn,"Update venue set venue ='$venue' where venueID=(Select venue_venueID from meeting where meetingID='$id')");
+	$sql2 = "Update meeting set startTime='$start_time', startDate='$start_date', title='$title', description='$desc' where meetingID='$id'";
+	mysqli_query($conn,$sql2);
+	header('location:event-details.php');
+
+
+}
+if(isset($_POST['editButt']))
+{
+	// edit the event, redirect user to the same page and edit it from there
+	header("location:/event-details.php?edit&id=$id");
+
+}
+if(isset($_POST['delButt']))
+{
+	// set the eventStatus to '2'- deleted
+	$sql = "Update meeting set eventStatus='2' where meetingID='$id'";
+	if(mysqli_query($conn,$sql))
+	{
+
+		header('location:index.php');
+	}
+}
+
+if(isset($_GET['edit']) && !empty($_GET['id']))
+{
+	//show the edit page
+?>
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+       <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Edit Event Details</h1>
+            </div>
+        </div>
+        <!--/.row-->
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="panel panel-info">
+					<form action='' method='post'>
+                    <div class="panel-heading"><input class='no_border' type='text' name='title_tb' value='<?php echo $title;?>'>
+                    </div>
+                    <div class="panel-body event-description">
+
+                        <p>
+
+                            <h3><?php echo $title.' Description'; ?></h3>
+							<div><em class="fa fa-calendar-check-o">&nbsp;</em><input class='no_border' type='text' id='datepicker' name='startdate_tb' value ='<?php echo $start_date; ?>'>
+							<div><em class="fa fa-clock-o">&nbsp;</em><input type='text' id='timepicker' class='time' value='<?php echo substr($start_time,0,8); ?>' name='starttime_tb'></div>
+							<div><em class="fa fa-map-o">&nbsp;</em><input class='no_border' type='text' name='venue_tb' value ='<?php echo $venue; ?>'></div>
+							<div><em class="fa fa-user">&nbsp;</em> <?php echo $username; ?></div>
+							<div><em class="fa fa-envelope-o">&nbsp;</em> <?php echo $email;?></div>
+							<textarea rows="4" cols='50' name='descrip_tb'><?php echo htmlspecialchars($description); ?></textarea>
+							<div><input type="submit" class="btn btn-md btn-primary" name='update_butt' value='Update'></div>
+							</form>
+
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+<?php
+}
+else
+{
 
 ?>
 
@@ -61,10 +138,12 @@ $userid     = $row['userID'];
                         <div><em class="fa fa-user">&nbsp;</em> <?php echo $username?></div>
                         <div><em class="fa fa-envelope-o">&nbsp;</em> <?php echo $email?></div>
                         <hr>
-                        <h3>Amend this event</h3><br>
-                        <button type="button" class="btn btn-md btn-info">Edit</button>
-                        <button type="button" class="btn btn-md btn-warning">Modify</button>
-                        <button type="button" class="btn btn-md btn-danger">Delete</button>
+                        <h3>Amend this event</h3>
+                        <br>
+            						<form action='' method ='POST'>
+                          <input type="submit" value='Edit' name='editButt' class="btn btn-md btn-info">
+                          <input type="submit" value='Delete' name='delButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
+            						</form>
                         <br>
                     </div>
                 </div>
@@ -137,4 +216,4 @@ $userid     = $row['userID'];
 
     </div>
 
-<?php include("includes/footer.inc.php"); ?>
+<?php } include("includes/footer.inc.php"); ?>
