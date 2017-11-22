@@ -50,6 +50,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             save the username to the session */
                             session_start();
                             $_SESSION['username'] = $username;
+                            $_SESSION['userID'] = $userID;
                             header("location: index.php");
                         } else{
                             if ($state != "yes")

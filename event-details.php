@@ -41,7 +41,7 @@ if(isset($_POST['update_butt']))
 	mysqli_query($conn,"Update venue set venue ='$venue' where venueID=(Select venue_venueID from meeting where meetingID='$id')");
 	$sql2 = "Update meeting set startTime='$start_time', endTime='$end_time', startDate='$start_date', endDate='$end_date', title='$title', description='$desc' where meetingID='$id'";
 	mysqli_query($conn,$sql2);
-	header('location:event-details.php');
+	header("location:event-details.php?id=$id");
 
 
 }
