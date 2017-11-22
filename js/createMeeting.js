@@ -23,43 +23,43 @@ function main() {
 
     initDatePicker();
 
-
-
 }
 
 function initDatePicker() {
-    
-    //    Standard datepicker
-    //    var from = $("#fromdate").datetimepicker({
-    //        defaultDate: "+1w",
-    //        numberOfMonths: 1,
-    //        format: "dd/mm/yyyy"
-    //    }).on("change", function () {
-    //        to.datepicker("option", "minDate", getDate(this));
-    //    });
-    //    var to = $("#todate").datetimepicker({
-    //        defaultDate: "+1w",
-    //        numberOfMonths: 1,
-    //        format: "dd/mm/yyyy"
-    //    }).on("change", function () {
-    //        from.datepicker("option", "maxDate", getDate(this));
-    //    });
 
     /* ---------- !!!! different datepicker library !!!! ---------- */
-    $('#todate').datetimepicker({
+    $('#startTime').datetimepicker({
         useCurrent: false, //datetimepicker - Important! See issue #1075
-        format: "llll"
+        format: "LT"
     });
-    $('#fromdate').datetimepicker({
+    $('#endTime').datetimepicker({
         useCurrent: false, //datetimepicker - Important! See issue #1075
-        format: "llll"
+        format: "LT"
     });
 
-    $("#fromdate").on("dp.change", function (e) {
-        $('#todate').data("DateTimePicker").minDate(e.date);
+//    $("#startTime").on("dp.change", function (e) {
+//        $('#endTime').data("DateTimePicker").minDate(e.date);
+//    });
+//    $("#endTime").on("dp.change", function (e) {
+//        $('#startTime').data("DateTimePicker").maxDate(e.date);
+//    });
+    /* ---------- !!!! different datepicker library !!!! ---------- */
+
+    /* ---------- !!!! different datepicker library !!!! ---------- */
+    $('#startDate').datetimepicker({
+        useCurrent: false, //datetimepicker - Important! See issue #1075
+        format: "ll"
     });
-    $("#todate").on("dp.change", function (e) {
-        $('#fromdate').data("DateTimePicker").maxDate(e.date);
+    $('#endDate').datetimepicker({
+        useCurrent: false, //datetimepicker - Important! See issue #1075
+        format: "ll"
+    });
+
+    $("#startDate").on("dp.change", function (e) {
+        $('#endDate').data("DateTimePicker").minDate(e.date);
+    });
+    $("#endDate").on("dp.change", function (e) {
+        $('#startDate').data("DateTimePicker").maxDate(e.date);
     });
     /* ---------- !!!! different datepicker library !!!! ---------- */
 
@@ -88,24 +88,32 @@ function getDate(element) {
     return date;
 }
 
-// jQuery 
+// jQueryValidate
 $("#createMeetingForm").validate({
     // Specify validation rules
     rules: {
         // The key name on the left side is the name attribute
         // of an input field. Validation rules are defined
         // on the right side
-        meetingtitle: "required",
-        meetingvenue: "required",
-        meetingfrom: "required",
-        meetingto: "required"
+        startDate: "required",
+        endDate: "required",
+        startTime: "required",
+        endTime: "required",
+        title: "required",
+        description: "required",
+        venue: "required",
+        participant: "required"
     },
     // Specify validation error messages
     messages: {
-        meetingtitle: "Please enter the meeting title",
-        meetingvenue: "Please enter the meeting venue",
-        meetingfrom: "Please enter the start date/time",
-        meetingto: "Please enter the end date/time"
+        startDate: "Please enter a start date",
+        endDate: "Please enter the end date",
+        startTime: "Please enter the start time",
+        endTime: "Please enter the end time",
+        title: "Please enter the meeting title",
+        description: "Please enter the description",
+        venue: "Please enter a meeting venue",
+        participant: "Please select at least one participant"
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid

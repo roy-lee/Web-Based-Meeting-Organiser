@@ -1,40 +1,31 @@
 <?php
 $currentPage = 'createMeeting';
 include("includes/header.inc.php");
-
 require_once 'config.php';
-
 $organiserusername = $_SESSION['username'];
-
 /* ---------------
  *
  * On page run
  *
  * ---------------  */
-
 function onPageRun() {
     getUserId();
 }
-
 #onPageRun();
 $userid = getUserId($mysqli,$organiserusername);
 $venues = get_venues($mysqli);
-
 function getUserId($mysqli,$username) {
     // Prepare a select statement
     $sql = "select userID from user where username = ?";
     if ($stmt = $mysqli->prepare($sql)) {
         // Bind variables to the prepared statement as parameters
         $stmt->bind_param("s", $param_username);
-
         // Set parameters
         $param_username = $username;
-
         // Attempt to execute the prepared statement
         if ($stmt->execute()) {
             // Store result
             $stmt->store_result();
-
             //
             if ($stmt->num_rows == 1) {
                 // Bind result variables
@@ -44,21 +35,16 @@ function getUserId($mysqli,$username) {
                 }
             }
         }
-
-
         // Close statement
         $stmt->close();
         return $userid;
     }
 }
-
 /* ---------------
  *
  * On page run
  *
  * ---------------  */
-
-
 /* ---------------
  *
  * Post Validation
@@ -71,12 +57,10 @@ $meetingtitle_err = $meetingvenue_err = $datestart_err = $dateend_err = $organis
 $repeattype_err = $isallday_err = $description_err = ""; // Invalid input only
 //$_POST["meetingtitle"]; //$_POST["meetingvenue"]; //$_POST["meetingallday"];
 //$_POST["meetingfrom"]; //$_POST["meetingto"]; //$_POST["meetingrepeat"];
-
 if (isset($_POST["meetingtitle"]))
 {
     validateOnPost($mysqli,$venues,$userid);
 }
-
 function get_venues($mysqli)
 {
     $venues = array();
@@ -94,10 +78,8 @@ function get_venues($mysqli)
     {
         $venue['NIL'] = 0;
     }
-
     return $venues;
 }
-
 function display_venues($venues)
 {
     foreach($venues as $key => $value)
@@ -105,7 +87,6 @@ function display_venues($venues)
         echo "<option value=".$value.">".$key."</option>";
     }
 }
-
 function validateOnPost($mysqli,$venues,$userid) {
     // Validate blanks
     if (empty(trim($_POST["meetingtitle"]))) {
@@ -121,17 +102,14 @@ function validateOnPost($mysqli,$venues,$userid) {
         $username_err = "Please enter the end date";
     }
     
-
     /*
      * Meeting data
      */
     // Check input errors before inserting in database
     if (empty($meetingtitle_err) && empty($meetingvenue_err) && empty($datestart_err) && empty($organiserid_err)
             && empty($repeattype_err) && empty($password_err) && empty($confirm_password_err)) {
-
         // Prepare an insert statement
         $sql = "INSERT INTO meeting (startDate, endDate, startTime, endTime, title, description, eventStatus, venue_venueid, user_userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-
         if ($stmt = $mysqli->prepare($sql)) {
             // Bind variables to the prepared statement as parameters
             $stmt->bind_param("ssssssiii", $param_sdate, $param_edate, $param_stime, $param_etime, $param_title, $param_description, $param_eventStatus, $param_venueid, $param_userid);
@@ -163,12 +141,10 @@ function validateOnPost($mysqli,$venues,$userid) {
             }
             $param_edate = $end_date;
             $param_etime = $end_time;
-
             $param_title = $_POST['meetingtitle'];
             $param_description = $_POST['description'];
             
             
-
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 // Executed, pass to index, show meetings
@@ -179,32 +155,25 @@ function validateOnPost($mysqli,$venues,$userid) {
                 echo "Something went wrong. Please try again later.";
             }
         } else {echo "unable to prepare statement";}
-
         // Close statement
         $stmt->close();
     }
-
     /*
      * Participants
      */
     /*
     $participantids = $_POST["participantids"];
-
     $meetingid = "";
-
     // Insert participants into participant table
     foreach ($participantids as $pid) {
         // Prepare an insert statement
         $sql = "INSERT INTO participants (meeting_meetingid, user_userid) VALUES (?, ?)";
-
         if ($stmt = $mysqli->prepare($sql)) {
             // Bind variables to the prepared statement as parameters
             $stmt->bind_param("ss", $param_meetingid, $param_participantid);
-
             // Set parameters
             $param_meetingid = $meetingid;
             $param_participantid = $pid;
-
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 // On success
@@ -213,7 +182,6 @@ function validateOnPost($mysqli,$venues,$userid) {
                 echo "Something went wrong. Please try again later.";
             }
         }
-
         // Close statement
         $stmt->close();
     }*/
