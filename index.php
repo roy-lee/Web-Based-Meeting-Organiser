@@ -1,6 +1,12 @@
 <?php
 $currentPage = 'index';
 include("includes/header.inc.php");
+
+$currentUserName = $_SESSION['username'];
+$sql = "select userID from user where username = '$currentUserName'";
+$results = mysqli_query($conn,$sql);
+$row = mysqli_fetch_assoc($results);
+$currentUserID = $row['userID'];
 ?>
 <link rel="stylesheet" href="css/pages/index.css">
 
@@ -76,7 +82,14 @@ include("includes/header.inc.php");
           <div class="row no-padding"><em class="fa fa-xl fa-check-square-o color-red"></em>
             <div class="large">
             <?php
-            $query = "SELECT COUNT(*) AS SUM FROM meeting_participants mp INNER JOIN meeting mt ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '1' and mt.eventStatus='1'";
+
+            $query = "SELECT COUNT(*) AS SUM FROM meeting_participants AS mp
+                      JOIN meeting AS m
+                      ON m.meetingID = mp.meeting_meetingID
+                      JOIN user AS u
+                      ON u.userID = m.user_userID
+                      WHERE u.userID = $currentUserID";
+
             $result = mysqli_query($mysqli,$query);
             $rows = mysqli_fetch_assoc($result);
             echo $rows['SUM'];
@@ -103,7 +116,7 @@ include("includes/header.inc.php");
           <ul class="timeline">
 
             <?php
-            $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1'";
+            $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1' ORDER BY mt.startDate ASC";
             $resultsOrganiser = mysqli_query($conn,$sqlOrganiser);
             while($row = mysqli_fetch_assoc($resultsOrganiser))
             {
@@ -164,65 +177,52 @@ include("includes/header.inc.php");
             </li>
           </ul>
           <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
-        <div class="panel-body articles-container">
+        <div class="panel-body timeline-container">
+          <ul class="timeline">
 
           <?php
-          $sqlJoinedEvents = "SELECT * FROM meeting_participants mp
-                              INNER JOIN meeting mt
-                              ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '1' and mt.eventStatus='1'";
+          //enze
+          $sqlJoinedEvents = "SELECT u.fullName, m.startDate, m.title, m.description, m.meetingID
+                        FROM meeting_participants AS mp
+                        JOIN meeting AS m
+                        ON m.meetingID = mp.meeting_meetingID
+                        JOIN user AS u
+                        ON u.userID = m.user_userID
+                        WHERE u.userID = $currentUserID";
+
+          // $sqlJoinedEvents = "SELECT mt.*, usr.*, mp.* from meeting mt INNER JOIN
+          //                     meeting_participants mp on mp.meeting_meetingID = mt.meetingID left JOIN user usr on usr.userID ='$currentUserID' where
+          //                     ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '$currentUserID' and mt.eventStatus='1'";
 
           // $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1'";
           $resultsJoinedEvents = mysqli_query($conn,$sqlJoinedEvents);
           while($row = mysqli_fetch_assoc($resultsJoinedEvents))
           {
             echo "
-
-            <li>
-              <div class='timeline-badge primary'><em class='glyphicon glyphicon-calendar'></em></div>
-              <div class='timeline-panel'>
-                <div class='timeline-heading'>
-                <div class='col-xs-2 col-md-2 date pull-right'>
-                  <div class='large'>30</div>
-                  <div class='text-muted'>Jun</div>
-                </div>
-                  <h4 class='timeline-title'>".$row['title']."</h4>
-
-                </div>
-                <div class='timeline-body'>
-                  <p>".$row['description']."</p>
-                  <hr>
-                  <div><p class='pull-left'>Organised by: <br>".$row['fullName']."</p>
-                  <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-primary pull-right'>Details</button></a>
-                </div>
-                </div>
-              </div>
-            </li>
-
-
-
-            <div class='article border-bottom'>
-              <div class='col-xs-12'>
-                <div class='row'>
-                  <div class='col-xs-2 col-md-2 date'>
-                    <div class='large'>30</div>
-                    <div class='text-muted'> ".$row['']."Jun</div>
+              <li>
+                <div class='timeline-badge danger'><em class='glyphicon glyphicon-calendar'></em></div>
+                <div class='timeline-panel'>
+                  <div class='timeline-heading'>
+                  <div class='col-xs-2 col-md-2 date pull-right'>
+                    <div class='large'>".getdateonly($row['startDate'])."</div>
+                    <div class='text-muted'>".numtomonth($row['startDate'])."</div>
                   </div>
-                  <div class='col-xs-10 col-md-10'>
-                    <h4><a href='#'>".$row['title']."</a></h4>
+                    <h4 class='timeline-title'>".$row['title']."</h4>
+
+                  </div>
+                  <div class='timeline-body'>
                     <p>".$row['description']."</p>
                     <hr>
-                    <div>
-                    <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-primary pull-right'>Details</button></a>
+                    <div><p class='pull-left'>Organised by: <br>".$row['fullName']."</p>
+                    <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-danger pull-right'>Details</button></a>
                   </div>
                   </div>
                 </div>
-              </div>
-              <div class='clear'></div>
-            </div><!--End .article-->";
+              </li>";
             }
           ?>
-
-        </div>
+        </ul>
+      </div>
       </div><!--End .articles-->
     </div><!--/.col-->
 
