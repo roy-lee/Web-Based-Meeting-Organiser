@@ -14,49 +14,59 @@ $meetingid = $_GET['id'];
  * ---------------  */
 $userid = getUserId($mysqli,$username);
 $proposals = get_all_proposals($mysqli,$meetingid);
-
-if (isset($_POST['meetingfrom']) && isset($_POST['meetingto']) && !empty($_POST['meetingfrom']) && !empty($_POST['meetingto']))
-{
-    $start_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingfrom']);
-    $start_date = $start_datetime->format('Y-m-d');
-    $start_time = $start_datetime->format('h:i:s');
-    if ((substr($_POST['meetingfrom'], -2) == "AM" && substr($start_time, 0, 2) == "12") || (substr($_POST['meetingfrom'], -2) == "PM" && substr($start_time, 0, 2) != "12"))
-    {
-        $timestamp = strtotime($start_time) + 60*60*12;
-        $time = date('H:i:s', $timestamp);
-        $start_time = $time;
-    }
-
-    $end_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingto']);
-    $end_date = $end_datetime->format('Y-m-d');
-    $end_time = $end_datetime->format('h:i:s');
-    if ((substr($_POST['meetingto'], -2) == "AM" && substr($end_time, 0, 2) == "12") || (substr($_POST['meetingto'], -2) == "PM" && substr($end_time, 0, 2) != "12"))
-    {
-        $timestamp = strtotime($end_time) + 60*60*12;
-        $time = date('H:i:s', $timestamp);
-        $end_time = $time;
-    }
-    
-    $sql = "INSERT INTO counter_proposal (startDate, endDate, startTime, endTime, status, user_userID, meeting_meetingID, meeting_venue_venueID, meeting_user_userID) VALUES (?,?,?,?,?,?,?,?,?);";
-    
-    if ($stmt = $mysqli->prepare($sql))
-    {
-        $stmt->bind_param("ssssiiiii", $param_sdate, $param_edate, $param_stime, $param_etime, $param_status, $param_uid, $param_mid, $param_vid, $param_ouid);
-
-        $param_sdate = $start_date;
-        $param_edate = $end_date;
-        $param_stime = $start_time;
-        $param_etime = $end_time;
-        $param_status = 2;
-        $param_ouid = $proposals[0]['meeting_user_userID'];
-        $param_uid = $userid;
-        $param_mid = $meetingid;
-        $param_vid = $proposals[0]['meeting_venue_venueID'];
-
-        $stmt->execute();
-    } else {echo "unable to prepare statement";}
-}
 $datestart_err = $dateend_err = "";
+
+if (isset($_POST['meetingfrom']) && isset($_POST['meetingto']))
+{
+    if (!empty($_POST['meetingfrom']) && !empty($_POST['meetingto']))
+    {
+        if (empty($datestart_err) && empty($dateend_err))
+        {
+            $start_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingfrom']);
+            $start_date = $start_datetime->format('Y-m-d');
+            $start_time = $start_datetime->format('h:i:s');
+            if ((substr($_POST['meetingfrom'], -2) == "AM" && substr($start_time, 0, 2) == "12") || (substr($_POST['meetingfrom'], -2) == "PM" && substr($start_time, 0, 2) != "12"))
+            {
+                $timestamp = strtotime($start_time) + 60*60*12;
+                $time = date('H:i:s', $timestamp);
+                $start_time = $time;
+            }
+
+            $end_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingto']);
+            $end_date = $end_datetime->format('Y-m-d');
+            $end_time = $end_datetime->format('h:i:s');
+            if ((substr($_POST['meetingto'], -2) == "AM" && substr($end_time, 0, 2) == "12") || (substr($_POST['meetingto'], -2) == "PM" && substr($end_time, 0, 2) != "12"))
+            {
+                $timestamp = strtotime($end_time) + 60*60*12;
+                $time = date('H:i:s', $timestamp);
+                $end_time = $time;
+            }
+
+            $sql = "INSERT INTO counter_proposal (startDate, endDate, startTime, endTime, status, user_userID, meeting_meetingID, meeting_venue_venueID, meeting_user_userID) VALUES (?,?,?,?,?,?,?,?,?);";
+
+            if ($stmt = $mysqli->prepare($sql))
+            {
+                $stmt->bind_param("ssssiiiii", $param_sdate, $param_edate, $param_stime, $param_etime, $param_status, $param_uid, $param_mid, $param_vid, $param_ouid);
+
+                $param_sdate = $start_date;
+                $param_edate = $end_date;
+                $param_stime = $start_time;
+                $param_etime = $end_time;
+                $param_status = 2;
+                $param_ouid = $proposals[0]['meeting_user_userID'];
+                $param_uid = $userid;
+                $param_mid = $meetingid;
+                $param_vid = $proposals[0]['meeting_venue_venueID'];
+
+                $stmt->execute();
+            } else {echo "unable to prepare statement";}
+        }
+    }else
+    {
+        $datestart_err = "Please enter the start date & time";
+        $dateend_err = "Please enter the end date & time";
+    }
+} 
 
 $proposals = get_all_proposals($mysqli,$meetingid);
 $user_prop = get_user_proposals($mysqli,$userid,$meetingid);
@@ -212,15 +222,15 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
     }
     if ($user_prop < 5 && count($proposals) < 10)
     {
-        echo "<div class='form-group'>
+        echo "<div class='form-group ".((!empty($datestart_err) || !empty($dateend_err)) ? "has-error" : "")."'>
             <label class='col-md-2 control-label'>Date Time</label>
             <div class='col-md-5'>
                 <input class='form-control' id='fromdate' type='text' name='meetingfrom' placeholder='Date From'>
-                <span class='help-block'><?php echo $datestart_err; ?></span>
+                <span class='help-block'>".$datestart_err."</span>
             </div>
             <div class='col-md-5'>
                 <input class='form-control' id='todate' type='text' name='meetingto' placeholder='Date To'>
-                <span class='help-block'><?php echo $dateend_err; ?></span>
+                <span class='help-block'>".$dateend_err."</span>
             </div>
            </div>
            <div class='form-group'>
@@ -251,7 +261,7 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
             <li><a href="#">
                     <em class="fa fa-home"></em>
                 </a></li>
-            <li class="active">Create Meeting</li>
+            <li class="active">Counter Proposal</li>
         </ol>
     </div><!--/.row-->
 
