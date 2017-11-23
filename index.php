@@ -1,6 +1,12 @@
 <?php
 $currentPage = 'index';
 include("includes/header.inc.php");
+
+$currentUserName = $_SESSION['username'];
+$sql = "select userID from user where username = '$currentUserName'";
+$results = mysqli_query($conn,$sql);
+$row = mysqli_fetch_assoc($results);
+$currentUserID = $row['userID'];
 ?>
 <link rel="stylesheet" href="css/pages/index.css">
 
@@ -22,7 +28,7 @@ include("includes/header.inc.php");
 
   <div class="panel panel-container">
     <div class="row">
-      <div class="col-xs-6 col-md-4 col-lg-4 no-padding">
+      <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
         <div class="panel panel-teal panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-calendar color-blue"></em>
             <div class="large">
@@ -38,9 +44,10 @@ include("includes/header.inc.php");
         </div>
       </div>
 
-      <div class="col-xs-6 col-md-4 col-lg-4 no-padding">
+      <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
         <div class="panel panel-blue panel-widget border-right">
-          <div class="row no-padding"><em class="fa fa-xl fa-check-square-o color-orange"></em>
+          <div class="row no-padding"><em class="fa fa-xl fa-calendar-check-o color-orange"></em>
+
             <div class="large">
               <?php
               $query = "SELECT COUNT(*) AS SUM FROM meeting";
@@ -54,7 +61,7 @@ include("includes/header.inc.php");
         </div>
       </div>
 
-      <div class="col-xs-6 col-md-4 col-lg-4 no-padding">
+      <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
         <div class="panel panel-orange panel-widget border-right">
           <div class="row no-padding"><em class="fa fa-xl fa-users color-teal"></em>
             <div class="large">
@@ -69,13 +76,38 @@ include("includes/header.inc.php");
           </div>
         </div>
       </div>
+
+      <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+        <div class="panel panel-orange panel-widget border-right">
+          <div class="row no-padding"><em class="fa fa-xl fa-check-square-o color-red"></em>
+            <div class="large">
+            <?php
+
+            $query = "SELECT COUNT(*) AS SUM FROM meeting_participants AS mp
+                      JOIN meeting AS m
+                      ON m.meetingID = mp.meeting_meetingID
+                      JOIN user AS u
+                      ON u.userID = m.user_userID
+                      WHERE u.userID = $currentUserID";
+
+            $result = mysqli_query($mysqli,$query);
+            $rows = mysqli_fetch_assoc($result);
+            echo $rows['SUM'];
+            ?>
+            </div>
+            <div class="text-muted">Registered Events</div>
+          </div>
+        </div>
+      </div>
+
     </div><!--/.row-->
   </div>
 
   <div class="row">
 
     <div class="col-md-12">
-    <div class="col-md-7 no-padding">
+
+    <div class="col-md-6 no-padding">
       <div class="panel panel-default ">
         <div class="panel-heading">
           Timeline of Events
@@ -84,7 +116,7 @@ include("includes/header.inc.php");
           <ul class="timeline">
 
             <?php
-            $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1'";
+            $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1' ORDER BY mt.startDate ASC";
             $resultsOrganiser = mysqli_query($conn,$sqlOrganiser);
             while($row = mysqli_fetch_assoc($resultsOrganiser))
             {
@@ -93,13 +125,18 @@ include("includes/header.inc.php");
                   <div class='timeline-badge primary'><em class='glyphicon glyphicon-calendar'></em></div>
                   <div class='timeline-panel'>
                     <div class='timeline-heading'>
-                      <h4 class='timeline-title'>".$row['title']." on ".$row['startDate']."</h4>
+                    <div class='col-xs-2 col-md-2 date pull-right'>
+                      <div class='large'>".getdateonly($row['startDate'])."</div>
+                      <div class='text-muted'>".numtomonth($row['startDate'])."</div>
+                    </div>
+                      <h4 class='timeline-title'>".$row['title']."</h4>
+
                     </div>
                     <div class='timeline-body'>
                       <p>".$row['description']."</p>
                       <hr>
                       <div><p class='pull-left'>Organised by: <br>".$row['fullName']."</p>
-                      <button type='button' class='btn btn-md btn-primary pull-right'><a href='#'>Details</a></button>
+                      <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-primary pull-right'>Details</button></a>
                     </div>
                     </div>
                   </div>
@@ -110,5 +147,84 @@ include("includes/header.inc.php");
         </div>
       </div>
     </div><!--/.timeline of events -->
+
+
+    <div class="col-md-6">
+      <div class="panel panel-default articles">
+        <div class="panel-heading">
+          My Events
+          <ul class="pull-right panel-settings panel-button-tab-right">
+            <li class="dropdown"><a class="pull-right dropdown-toggle" data-toggle="dropdown" href="#">
+              <em class="fa fa-cogs"></em>
+            </a>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li>
+                  <ul class="dropdown-settings">
+                    <li><a href="#">
+                      <em class="fa fa-cog"></em> Settings 1
+                    </a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">
+                      <em class="fa fa-cog"></em> Settings 2
+                    </a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">
+                      <em class="fa fa-cog"></em> Settings 3
+                    </a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+        <div class="panel-body timeline-container">
+          <ul class="timeline">
+
+          <?php
+          //enze
+          $sqlJoinedEvents = "SELECT u.fullName, m.startDate, m.title, m.description, m.meetingID
+                        FROM meeting_participants AS mp
+                        JOIN meeting AS m
+                        ON m.meetingID = mp.meeting_meetingID
+                        JOIN user AS u
+                        ON u.userID = m.user_userID
+                        WHERE u.userID = $currentUserID";
+
+          // $sqlJoinedEvents = "SELECT mt.*, usr.*, mp.* from meeting mt INNER JOIN
+          //                     meeting_participants mp on mp.meeting_meetingID = mt.meetingID left JOIN user usr on usr.userID ='$currentUserID' where
+          //                     ON mp.meeting_meetingID = mt.meetingID where mp.user_userID = '$currentUserID' and mt.eventStatus='1'";
+
+          // $sqlOrganiser = "SELECT usr.*, mt.* from meeting mt INNER JOIN user usr on mt.user_userID = usr.userID where mt.eventStatus = '1'";
+          $resultsJoinedEvents = mysqli_query($conn,$sqlJoinedEvents);
+          while($row = mysqli_fetch_assoc($resultsJoinedEvents))
+          {
+            echo "
+              <li>
+                <div class='timeline-badge danger'><em class='glyphicon glyphicon-calendar'></em></div>
+                <div class='timeline-panel'>
+                  <div class='timeline-heading'>
+                  <div class='col-xs-2 col-md-2 date pull-right'>
+                    <div class='large'>".getdateonly($row['startDate'])."</div>
+                    <div class='text-muted'>".numtomonth($row['startDate'])."</div>
+                  </div>
+                    <h4 class='timeline-title'>".$row['title']."</h4>
+
+                  </div>
+                  <div class='timeline-body'>
+                    <p>".$row['description']."</p>
+                    <hr>
+                    <div><p class='pull-left'>Organised by: <br>".$row['fullName']."</p>
+                    <a href='event-details.php?id=".$row['meetingID']."'><button type='button' class='btn btn-md btn-danger pull-right'>Details</button></a>
+                  </div>
+                  </div>
+                </div>
+              </li>";
+            }
+          ?>
+        </ul>
+      </div>
+      </div><!--End .articles-->
+    </div><!--/.col-->
+
 
 <?php include("includes/footer.inc.php"); ?>
