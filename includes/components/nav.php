@@ -9,6 +9,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username']) || !isset($_SES
 }
 else {
     $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
     require_once "config.php";
 
     $sql = "SELECT email, fullName, password FROM user WHERE username = ?";
@@ -35,6 +36,7 @@ else {
         }
     }
   }
+
 ?>
 
 <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
@@ -45,7 +47,7 @@ else {
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span></button>
 
-					<a class="navbar-brand" href="#"><span>Meeting</span> Organiser</a>
+					<a class="navbar-brand" href="index.php"><span>Meeting</span> Organiser</a>
 
 				</div>
 			</div><!-- /.container-fluid -->
@@ -67,8 +69,8 @@ else {
 				<li class="<?php if($currentPage =='index'){echo 'active';}?>"><a href="index.php"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
 				<!-- <li><a href="widgets.html"><em class="fa fa-calendar">&nbsp;</em> Widgets</a></li> -->
 				<!-- <li class="<?php if($currentPage =='event'){echo 'active';}?>"><a href="event-details.php"><em class="fa fa-calendar">&nbsp;</em> Event Details</a></li> -->
-        <li class="<?php if($currentPage =='createMeeting'){echo 'active';}?>"><a href="createMeeting.php"><em class="fa fa-dashboard">&nbsp;</em> Create Meeting</a></li>
-        <li class="<?php if($currentPage =='createVenue'){echo 'active';}?>"><a href="createVenue.php"><em class="fa fa-dashboard">&nbsp;</em> Create Venue</a></li>
+        <li class="organiserMenu <?php if($currentPage =='createMeeting'){echo 'active';}?>"><a href="createMeeting.php"><em class="fa fa-dashboard">&nbsp;</em> Create Meeting</a></li>
+        <li class="organiserMenu <?php if($currentPage =='createVenue'){echo 'active';}?>"><a href="createVenue.php"><em class="fa fa-dashboard">&nbsp;</em> Create Venue</a></li>
 				<!-- <li><a href="charts.html"><em class="fa fa-bar-chart">&nbsp;</em> Charts</a></li>
 				<li><a href="event-details.php"><em class="fa fa-calendar">&nbsp;</em> Event Details</a></li>
 				<li><a href="charts.html"><em class="fa fa-bar-chart">&nbsp;</em> Charts</a></li>

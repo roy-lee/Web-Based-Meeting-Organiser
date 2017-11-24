@@ -18,23 +18,79 @@ $newVenueSuccessMsg = "";
 //$_POST["meetingtitle"]; //$_POST["meetingvenue"]; //$_POST["meetingallday"];
 //$_POST["meetingfrom"]; //$_POST["meetingto"]; //$_POST["meetingrepeat"];
 
+if(isset($_GET['id']))
+{
+    echo $_GET['id'];
+    $sql1 = "select * from meeting where venue_venueid=".$_GET['id'].";";
+    $result1 = $mysqli->query($sql1);
+    if ($result1->num_rows > 0)
+    {
+        echo "
+            <div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
+             <div class='row'>
+                 <div class='col-lg-12 col-md-12'>
+                    <div class='alert bg-red' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>Venue used by other meetings and cannot be removed!</div>
+                 </div>
+             </div>
+            </div>
+            ";
+    }
+    else
+    {
+        $sql2 = "delete from venue where venueid=".$_GET['id'].";";
+        $mysqli->query($sql2);
+        echo "
+            <div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
+             <div class='row'>
+                 <div class='col-lg-12 col-md-12'>
+                    <div class='alert bg-red' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>Venue successfully deleted!</div>
+                 </div>
+             </div>
+            </div>
+            ";
+    }
+}
+
 
  if(isset($_POST['save']) && empty($newVenueName_err))
 {
-   $sql = "INSERT INTO venue (venue)
-   VALUES ('".$_POST["newVenueName"]."')";
+     if(!empty($_POST['newVenueName']))
+     {
+        $sql1 = "SELECT venue from venue";
+        $result = $mysqli->query($sql1);
+        $valid = 1;
 
-   $result = mysqli_query($conn,$sql);
-   echo "
-   <div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
-     <div class='row'>
-         <div class='col-lg-12 col-md-12'>
-            <div class='alert bg-teal' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>New venue successfully created!</div>
-         </div>
-     </div>
-   </div>
-   ";
+        if ($result->num_rows > 0)
+        {
+            while ($row = $result->fetch_assoc())
+            {
+                if ($row['venue'] == $_POST["newVenueName"])
+                {
+                    $valid = 0;
+                }
+            }
+        }
 
+        if ($valid)
+        {
+            $sql = "INSERT INTO venue (venue) VALUES ('".$_POST["newVenueName"]."')";
+
+            $result = mysqli_query($conn,$sql);
+            echo "
+            <div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
+             <div class='row'>
+                 <div class='col-lg-12 col-md-12'>
+                    <div class='alert bg-teal' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>New venue successfully created!</div>
+                 </div>
+             </div>
+            </div>
+            ";
+        }
+         else
+         {
+             $newVenueName_err = "Venue already exists and cannot be inserted.";
+         }
+     }else { $newVenueName_err = "Please enter a venue.";}
 }
 
 
@@ -111,7 +167,7 @@ $stmt->close();
                 <div class="panel-body">
                     <form class="form-horizontal row-border" action="createVenue.php" name="createVenue" id="createVenueForm" method="post">
 
-                        <div class="form-group">
+                        <div class="form-group <?php echo (!empty($newVenueName_err)) ? 'has-error' : ''; ?>">
                             <label class="col-md-2 control-label" for="meetingtitle">New Venue</label>
                             <div class="col-md-10">
                                 <input class="form-control" type="text" name="newVenueName" placeholder="Location Name" required>
@@ -120,7 +176,7 @@ $stmt->close();
                         </div>
 
                         <div class="form-group">
-                          <label class="col-md-2 control-label" for="meetingtitle"></label>
+                          <label class="col-md-2 control-label" for=""></label>
                           <div class="col-md-10">
                                 <button type="submit" name="save" class="btn btn-primary btn-md">Submit</button>
                                 <button type="reset" class="btn btn-default btn-md">Reset</button>
@@ -159,6 +215,7 @@ $stmt->close();
                                             <tr>
                                               <th data-field="state" data-sortable="true">S/N</th>
                                               <th data-field="id" data-sortable="true">Venue</th>
+                                              <th data-field="delete">Delete</th>
                                             </tr>
                                           </thead>
                                           <?php
@@ -174,6 +231,7 @@ $stmt->close();
                                                     <tr>
                                                       <td>".$i."</td>
                                                       <td>".$row['venue']."</td>
+                                                      <td><a href='createVenue.php?id=".$row['venueID']."'><button type='button' class='btn btn-sm btn-danger'>Delete</button></a></td>
                                                     </tr>";
                                                     ++$i;
                                               }
@@ -210,10 +268,3 @@ $stmt->close();
     </div>
 
 <?php include("includes/footer.inc.php"); ?>
-
-
-    <script src="js/moment.js"></script>
-    <script src="js/moment-with-locales.js"></script>
-    <script src="js/bootstrap-datetimepicker.js"></script>
-    <script src="js/jquery.validate.min.js"></script>
-    <script src="js/createMeeting.js"></script>

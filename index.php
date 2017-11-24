@@ -8,7 +8,6 @@ $results = mysqli_query($conn,$sql);
 $row = mysqli_fetch_assoc($results);
 $currentUserID = $row['userID'];
 ?>
-<link rel="stylesheet" href="css/pages/index.css">
 
 <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
   <div class="row">
@@ -88,7 +87,7 @@ $currentUserID = $row['userID'];
                       ON m.meetingID = mp.meeting_meetingID
                       JOIN user AS u
                       ON u.userID = m.user_userID
-                      WHERE u.userID = $currentUserID";
+                      WHERE mp.user_userID = $currentUserID AND m.eventStatus = '1'";
 
             $result = mysqli_query($mysqli,$query);
             $rows = mysqli_fetch_assoc($result);
@@ -153,42 +152,27 @@ $currentUserID = $row['userID'];
       <div class="panel panel-default articles">
         <div class="panel-heading">
           My Events
-          <ul class="pull-right panel-settings panel-button-tab-right">
-            <li class="dropdown"><a class="pull-right dropdown-toggle" data-toggle="dropdown" href="#">
-              <em class="fa fa-cogs"></em>
-            </a>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li>
-                  <ul class="dropdown-settings">
-                    <li><a href="#">
-                      <em class="fa fa-cog"></em> Settings 1
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">
-                      <em class="fa fa-cog"></em> Settings 2
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">
-                      <em class="fa fa-cog"></em> Settings 3
-                    </a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-          </ul>
           <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
         <div class="panel-body timeline-container">
           <ul class="timeline">
 
           <?php
-          //enze
+
+          // $sqlJoinedEvents = "SELECT u.fullName, m.startDate, m.title, m.description, m.meetingID
+          //               FROM meeting_participants AS mp
+          //               JOIN meeting AS m
+          //               ON m.meetingID = mp.meeting_meetingID
+          //               JOIN user AS u
+          //               ON u.userID = m.user_userID
+          //               WHERE u.userID = $currentUserID";
+
           $sqlJoinedEvents = "SELECT u.fullName, m.startDate, m.title, m.description, m.meetingID
-                        FROM meeting_participants AS mp
-                        JOIN meeting AS m
-                        ON m.meetingID = mp.meeting_meetingID
-                        JOIN user AS u
-                        ON u.userID = m.user_userID
-                        WHERE u.userID = $currentUserID";
+                              FROM meeting_participants AS mp
+                              JOIN meeting AS m
+                              ON m.meetingID = mp.meeting_meetingID
+                              JOIN user AS u
+                              ON u.userID = m.user_userID
+                              WHERE mp.user_userID = $currentUserID AND m.eventStatus = '1'";
 
           // $sqlJoinedEvents = "SELECT mt.*, usr.*, mp.* from meeting mt INNER JOIN
           //                     meeting_participants mp on mp.meeting_meetingID = mt.meetingID left JOIN user usr on usr.userID ='$currentUserID' where
