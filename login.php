@@ -131,6 +131,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
                                     </fieldset>
                     </form>
+                                <noscript>*Please enable javascript on your device to enjoy the best experience*</noscript>
         					</div>
         				</div>
         			</div><!-- /.col-->

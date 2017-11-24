@@ -71,20 +71,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             Thanks.";
             $result = send_email($email,$subject,$message,true);
 
-            if ($result == true)
-            {
-                // Attempt to execute the prepared statement
-                if($stmt->execute()){
-                    // Redirect to login page
-                    header("location: verification.php");
-                } else{
-                    echo "Something went wrong while inserting user account details. Please try again later.";
-                }
+            //if ($result == true)
+            //{
+            // Attempt to execute the prepared statement
+            if($stmt->execute()){
+                // Redirect to login page
+                header("location: ./verification.php");
+            } else{
+                echo "Something went wrong while inserting user account details. Please try again later.";
+            }
 
-            }
-            else {
+            //}
+            /*else {
                 $email_err = "Unable to send email to this email address.";
-            }
+            }*/
         // Close statement
         $stmt->close();
         }

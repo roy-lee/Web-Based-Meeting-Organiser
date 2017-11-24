@@ -22,11 +22,11 @@ function get_venues($mysqli)
 {
     $venues = array();
     $sql = "select * from venue;";
-
+    
     $result = $mysqli->query($sql);
     if ($result->num_rows > 0)
     {
-        while($row = $result->fetch_assoc())
+        while($row = $result->fetch_assoc()) 
         {
             $venues[$row['venue']] = $row['venueID'];
         }
@@ -39,9 +39,9 @@ function get_users($mysqli,$organiser)
 {
     $users_fullnames = array();
     $users_emails = array();
-
+    
     $sql = "select * from user where username != '".$organiser."';";
-
+    
     $result = $mysqli->query($sql);
     if ($result->num_rows >0)
     {
@@ -56,7 +56,7 @@ function get_users($mysqli,$organiser)
         $users_fullname[0] = "NIL";
         $users_emails[0] = "NIL";
     }
-
+    
     $results = array($users_fullnames,$users_emails);
     return $results;
 }
@@ -117,25 +117,25 @@ function getUserId($mysqli,$username) {
 $title = $description = $sdate = $edate = "";
 $title_err = $venue_err = $description_err = $date_err = $participants_err = "";
 
-if (isset($_POST["meetingtitle"]) && isset($_POST['meetingvenue']) && isset($_POST['meetingfrom']) && isset($_POST['meetingto']) && isset($_POST['description']))
+if (isset($_POST['meetingtitle']) && isset($_POST['description']) && isset($_POST['meetingfrom']) && isset($_POST['meetingto']))
 {
     //validate meeting title
     if (empty(trim($_POST['meetingtitle'])))
     {
-        $meetingtitle_err = "Please enter a meeting title.";
+        $title_err = "Please enter a meeting title.";
     }
     else if (strlen($_POST['meetingtitle']) > 45)
     {
-        $meetingtitle_err = "Meeting title length must not exceed 45 characters.";
+        $title_err = "Meeting title length must not exceed 45 characters.";
     }
     else
     {
         $title = trim($_POST['meetingtitle']);
     }
     //validate meeting venue
-    if (empty(trim($_POST['meetingvenue'])))
+    if (!isset($_POST['meetingvenue']))
     {
-        $meetingvenue_err = "Please enter a meeting venue.";
+        $venue_err = "Please enter a meeting venue.";
     }
     //Validate meeting description
     if (empty(trim($_POST['description'])))
@@ -161,7 +161,7 @@ if (isset($_POST["meetingtitle"]) && isset($_POST['meetingvenue']) && isset($_PO
         $edate = trim($_POST['meetingto']);
     }
     //validate participants
-    if (!isset($_POST['participants']) || empty($_POST['participants']))
+    if (!isset($_POST['participants']))
     {
         $participants_err = "Please select at least one participant for the meeting.";
     }
@@ -169,7 +169,7 @@ if (isset($_POST["meetingtitle"]) && isset($_POST['meetingvenue']) && isset($_PO
     {
         validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$organiserusername);
     }
-}
+}else{echo "no post detected";}
 
 function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$organiserusername) {
     /*
@@ -266,7 +266,6 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                         $param_uid = $pid;
                         if ($stmt->execute())
                         {
-
                             $p_fullname = $user_fullnames[$pid];
                             $p_email = $user_emails[$pid];
                             $message = "Hi $p_fullname,<br>
@@ -277,7 +276,6 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                             Do not reply to this email.<br>
                             Thanks.";
                             $result = send_email($p_email,$subject,$message,true);
-
                         }
                         else {
                             // Stay on page, retry
@@ -335,7 +333,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                         <div class="form-group <?php echo (!empty($venue_err)) ? 'has-error' : ''; ?>">
                             <label class="col-md-2 control-label" for="meetingvenue">Venue</label>
                             <div class="col-md-10">
-                                <select id="repeatSelect" name="meetingvenue" class="form-control">
+                                <select id="meetingvenue" name="meetingvenue" class="form-control">
                                     <?php display_venues($venues); ?>
                                 </select>
                                 <span class="help-block"><?php echo $venue_err; ?></span>
@@ -360,9 +358,8 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                                 <span class="help-block"><?php echo $description_err; ?></span>
                             </div>
                         </div>
-                      
+                        
                         <div class="form-group <?php echo (!empty($participants_err)) ? 'has-error' : ''; ?>">
-
                             <label class="col-md-2 control-label" for="participants">Participants</label>
                             <div class="col-md-10">
                                 <select id="participants" name="participants[]" class="form-control" multiple>

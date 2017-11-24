@@ -29,6 +29,9 @@ function main() {
 
 function initDatePicker() {
     
+    var currentdate = new Date(); 
+    
+    
     //    Standard datepicker
     //    var from = $("#fromdate").datetimepicker({
     //        defaultDate: "+1w",
@@ -51,6 +54,7 @@ function initDatePicker() {
         format: "llll"
     });
     $('#fromdate').datetimepicker({
+        minDate: currentdate,
         useCurrent: false, //datetimepicker - Important! See issue #1075
         format: "llll"
     });
@@ -105,7 +109,7 @@ $("#createMeetingForm").validate({
     // Specify validation error messages
     messages: {
         meetingtitle: "Please enter the meeting title",
-        meetingvenue: "Please enter the meeting venue",
+        meetingvenue: "Please select the meeting venue",
         meetingfrom: "Please enter the start date/time",
         meetingto: "Please enter the end date/time",
         description: "Please enter the meeting description",
