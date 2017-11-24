@@ -98,14 +98,40 @@ $("#createMeetingForm").validate({
         meetingtitle: "required",
         meetingvenue: "required",
         meetingfrom: "required",
-        meetingto: "required"
+        meetingto: "required",
+        description: "required",
+        "participants[]": "required"
     },
     // Specify validation error messages
     messages: {
         meetingtitle: "Please enter the meeting title",
         meetingvenue: "Please enter the meeting venue",
         meetingfrom: "Please enter the start date/time",
-        meetingto: "Please enter the end date/time"
+        meetingto: "Please enter the end date/time",
+        description: "Please enter the meeting description",
+        "participants[]": "Please select at least one participant for the meeting"
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function (form) {
+        form.submit();
+    }
+})
+
+// jQuery 
+$("#counter-proposes").validate({
+    // Specify validation rules
+    rules: {
+        // The key name on the left side is the name attribute
+        // of an input field. Validation rules are defined
+        // on the right side
+        meetingfrom: "required",
+        meetingto: "required",
+    },
+    // Specify validation error messages
+    messages: {
+        meetingfrom: "Please enter the start date/time",
+        meetingto: "Please enter the end date/time",
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
