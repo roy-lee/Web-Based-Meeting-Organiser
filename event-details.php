@@ -6,19 +6,18 @@ $id = @$_GET['id'];
 // Comment away placeholder ID. For testing purpose
 // $id = 1;
 
+
 $inner_join = "Select mt.*, usr.*, ven.* FROM meeting mt INNER JOIN venue ven on mt.venue_venueID = ven.VenueID LEFT JOIN user usr on mt.user_UserID = usr.userID where mt.meetingID='$id' and mt.eventStatus = '1'";
-//$description = "Select * from meeting where meetingID=$id";
 
 $results = mysqli_query($conn,$inner_join);
 $row = mysqli_fetch_assoc($results);
-//$venue = "Select venue from venue where venueID='$row[venue_venueID]'";
-//$row2 = mysqli_fetch_assoc(mysqli_query($conn,$venue));
+
 $title = $row['title'];
 $description = $row['description'];
 $start_date = $row['startDate'];
 $end_date = $row['endDate'];
-$start_time = $row['startTime'];
-$end_time = $row['endTime'];
+$start_time = substr($row['startTime'],0,5);
+$end_time = substr($row['endTime'],0,5);
 $venue 		= $row['venue'];
 $username   = $row['username'];
 $fullName   = $row['fullName'];
@@ -28,20 +27,48 @@ $userid     = $row['userID'];
 if(isset($_POST['update_butt']))
 {
 	// if update button is press update the table
-	$venue = $_POST['venue_tb'];
-	$start_time = $_POST['starttime_tb'];
-	$end_time = $_POST['endtime_tb'];
-  $start_date = $_POST['startdate_tb'];
-	$end_date = $_POST['enddate_tb'];
-	$desc		= $_POST['descrip_tb'];
-	$title 		= $_POST['title_tb'];
+    $title 	= $_POST['title_tb'];
+    $venue = $_POST['venue_tb'];
+	$description = $_POST['descrip_tb'];
+    if (!preg_match('/[@]/',$_POST['meetingfrom']) && !empty($_POST['meetingfrom']))
+    {
+        $start_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingfrom']);
+        $start_date = $start_datetime->format('Y-m-d');
+        $start_time = $start_datetime->format('h:i:s');
+        if ((substr($_POST['meetingfrom'], -2) == "AM" && substr($start_time, 0, 2) == "12") || (substr($_POST['meetingfrom'], -2) == "PM" && substr($start_time, 0, 2) != "12"))
+        {
+            $timestamp = strtotime($start_time) + 60*60*12;
+            $time = date('H:i:s', $timestamp);
+            $start_time = $time;
+        }
+    }
+    if (!preg_match('/[@]/',$_POST['meetingto']) && !empty($_POST['meetingto']))
+    {
+        $end_datetime = date_create_from_format('D, M d, Y h:i A', $_POST['meetingto']);
+        $end_date = $end_datetime->format('Y-m-d');
+        $end_time = $end_datetime->format('h:i:s');
+        if ((substr($_POST['meetingto'], -2) == "AM" && substr($end_time, 0, 2) == "12") || (substr($_POST['meetingto'], -2) == "PM" && substr($end_time, 0, 2) != "12"))
+        {
+            $timestamp = strtotime($end_time) + 60*60*12;
+            $time = date('H:i:s', $timestamp);
+            $end_time = $time;
+        }
+    }
+    $sql1 = "select venueID from venue where venue='$venue';";
+    $result = $mysqli->query($sql1);
+    if ($result->num_rows > 0)
+    {
+        while($row = $result->fetch_assoc()) 
+        {
+            $venue_id = $row['venueID'];
+        }
+    }
+    
 
 	// validate if need to//
-
-	mysqli_query($conn,"Update venue set venue ='$venue' where venueID=(Select venue_venueID from meeting where meetingID='$id')");
-	$sql2 = "Update meeting set startTime='$start_time', endTime='$end_time', startDate='$start_date', endDate='$end_date', title='$title', description='$desc' where meetingID='$id'";
-	mysqli_query($conn,$sql2);
-	header("location:event-details.php?id=$id");
+	$sql = "Update meeting set startTime='$start_time', endTime='$end_time', startDate='$start_date', endDate='$end_date', title='$title', description='$description', venue_venueID='$venue_id' where meetingID='$id'";
+	mysqli_query($conn,$sql);
+	// header("location:event-details.php?id=$id");
 
 }
 if(isset($_POST['joinButt']))
@@ -60,7 +87,7 @@ if(isset($_POST['joinButt']))
 if(isset($_POST['editButt']))
 {
 	// edit the event, redirect user to the same page and edit it from there
-	header("location:/event-details.php?edit&id=$id");
+	header("location:./event-details.php?edit&id=$id");
 
 }
 if(isset($_POST['delButt']))
@@ -99,10 +126,10 @@ if(isset($_GET['edit']) && !empty($_GET['id']))
   <div class="row">
     <div class="col-md-12">
       <div class="panel panel-default">
-        <div class="panel-heading clearfix"><?php echo $title;?> Event Description</div>
+        <div class="panel-heading clearfix">Event Description for '<?php echo $title;?>'</div>
         <div class="panel-body">
 
-          <form class="form-horizontal row-border" action='' method='post'>
+          <form class="form-horizontal row-border" action='' name="editMeeting" id="editMeetingForm" method='post'>
             <div class="form-group">
               <label class="col-md-2 control-label">Event Name</label>
               <div class="col-md-10">
@@ -127,41 +154,41 @@ if(isset($_GET['edit']) && !empty($_GET['id']))
             <div class="form-group">
               <label class="col-md-2 control-label">Venue</label>
               <div class="col-md-10">
-                <select class="form-control input-lg">
-                  <option value='<?php echo $venue; ?>' name='event_tb'><?php echo $venue; ?></option>
+								<select class="form-control input-lg" name=venue_tb>
+									<?php
+
+									$sql = "select venue from venue";
+							    $result = $mysqli->query($sql);
+							    if ($result->num_rows >0)
+							    {
+							        while($row = $result->fetch_assoc())
+							        {
+												if ($row['venue'] == $venue) {
+													echo "<option selected='selected' value='$venue'>$venue</option>";
+												}
+												else
+													echo "<option value='".$row['venue'].";'>".$row['venue']." </option>";
+							        }
+							    }
+
+									?>
                 </select>
               </div>
             </div>
 
-            <div class="form-group">
-              <label class="col-md-2 control-label">Start Date</label>
-              <div class="col-md-4">
-                <select class="form-control input-lg">
-                  <option value='<?php echo $start_date; ?>' name='startdate_tb'><?php echo $start_date; ?></option>
-                </select>
-              </div>
-              <label class="col-md-2 control-label">End Date</label>
-              <div class="col-md-4">
-                <select class="form-control input-lg">
-                  <option value='<?php echo $end_date; ?>' name='enddate_tb'><?php echo $end_date; ?></option>
-                </select>
-              </div>
-            </div>
 
-            <div class="form-group">
-              <label class="col-md-2 control-label">Start Time</label>
-              <div class="col-md-4">
-                <select class="form-control input-lg">
-                  <option value="<?php echo $start_time; ?>" name='starttime_tb'><?php echo $start_time; ?></option>
-                </select>
-              </div>
-              <label class="col-md-2 control-label">End Time</label>
-              <div class="col-md-4">
-                <select class="form-control input-lg">
-                  <option value="<?php echo $end_time; ?>" name='endtime_tb'><?php echo $end_time; ?></option>
-                </select>
-              </div>
-            </div>
+						<div class="form-group">
+								<label class="col-md-2 control-label">Date Time</label>
+								<div class="col-md-5">
+										<input class="form-control" id="fromdate" type="text" value="<?php echo $start_date." @ ".$start_time."hrs"; ?>" name="meetingfrom" placeholder="<?php echo $start_date." @ ".$start_time."hrs"; ?>">
+								</div>
+								<div class="col-md-5">
+										<input class="form-control" id="todate" type="text" value="<?php echo $end_date." @ ".$end_time."hrs"; ?>" name="meetingto" placeholder="<?php echo $end_date." @ ".$end_time."hrs"; ?>">
+								</div>
+						</div>
+
+
+
 
             <div class="form-group">
               <label class="col-md-2 control-label">Description</label>
@@ -339,3 +366,9 @@ else
     </div>
 
 <?php } include("includes/footer.inc.php"); ?>
+    
+    <script src="js/moment.js"></script>
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/bootstrap-datetimepicker.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/createMeeting.js"></script>
