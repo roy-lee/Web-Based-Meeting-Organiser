@@ -22,11 +22,11 @@ function get_venues($mysqli)
 {
     $venues = array();
     $sql = "select * from venue;";
-    
+
     $result = $mysqli->query($sql);
     if ($result->num_rows > 0)
     {
-        while($row = $result->fetch_assoc()) 
+        while($row = $result->fetch_assoc())
         {
             $venues[$row['venue']] = $row['venueID'];
         }
@@ -39,9 +39,9 @@ function get_users($mysqli,$organiser)
 {
     $users_fullnames = array();
     $users_emails = array();
-    
+
     $sql = "select * from user where username != '".$organiser."';";
-    
+
     $result = $mysqli->query($sql);
     if ($result->num_rows >0)
     {
@@ -56,7 +56,7 @@ function get_users($mysqli,$organiser)
         $users_fullname[0] = "NIL";
         $users_emails[0] = "NIL";
     }
-    
+
     $results = array($users_fullnames,$users_emails);
     return $results;
 }
@@ -266,6 +266,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                         $param_uid = $pid;
                         if ($stmt->execute())
                         {
+
                             $p_fullname = $user_fullnames[$pid];
                             $p_email = $user_emails[$pid];
                             $message = "Hi $p_fullname,<br>
@@ -276,6 +277,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                             Do not reply to this email.<br>
                             Thanks.";
                             $result = send_email($p_email,$subject,$message,true);
+
                         }
                         else {
                             // Stay on page, retry
@@ -358,8 +360,9 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                                 <span class="help-block"><?php echo $description_err; ?></span>
                             </div>
                         </div>
-                        
+                      
                         <div class="form-group <?php echo (!empty($participants_err)) ? 'has-error' : ''; ?>">
+
                             <label class="col-md-2 control-label" for="participants">Participants</label>
                             <div class="col-md-10">
                                 <select id="participants" name="participants[]" class="form-control" multiple>
