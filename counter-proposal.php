@@ -42,6 +42,7 @@ if (isset($_POST['meetingfrom']) && isset($_POST['meetingto']))
                 $end_time = $time;
             }
 
+
             $sql = "INSERT INTO counter_proposal (startDate, endDate, startTime, endTime, status, user_userID, meeting_meetingID, meeting_venue_venueID, meeting_user_userID) VALUES (?,?,?,?,?,?,?,?,?);";
 
             if ($stmt = $mysqli->prepare($sql))
@@ -137,6 +138,7 @@ function getFullname($mysqli,$userid) {
 }
 
 function getMeetingInfo($mysqli,$meetingid)
+
 {
     $mtitle = "";
     $mdesc = "";
@@ -185,6 +187,7 @@ function get_all_proposals($mysqli,$meetingid)
     {
         $count = 0;
         while($row = $result->fetch_assoc())
+
         {
             $proposals[$count] = $row;
             $count += 1;
@@ -194,14 +197,15 @@ function get_all_proposals($mysqli,$meetingid)
 }
 
 function get_user_proposals($mysqli,$userid,$meetingid)
-{
-    $sql = "select count(*) from counter_proposal where user_userID = $userid and meeting_meetingid = $meetingid ;";
 
+{    
+    $sql = "select count(*) from counter_proposal where user_userID = $userid and meeting_meetingid = $meetingid ;";
+    
     $result = $mysqli->query($sql);
     $rows = mysqli_fetch_assoc($result);
-
+    
     $count = $rows['count(*)'];
-
+    
     return $count;
 }
 
@@ -251,9 +255,6 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
 
 }
 ?>
-<head>
-    <link href="css/pages/createMeeting.css" rel="stylesheet" >
-</head>
 
 <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
     <div class="row">
@@ -293,15 +294,15 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
                                 <span class="help-block"></span>
                             </div>
                         </div>
-
+                
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="description">Description</label>
                             <div class="col-md-10">
-                                <input class="form-control" id=description type="text" name="description" value="<?php echo $meeting_info[1]; ?>" disabled="disabled">
+                                <input class="form-control" id=description type="text" name="description" value="<?php echo $meeting_info[1]; ?>" disabled="disabled">            
                                 <span class="help-block"></span>
                             </div>
                         </div>
-
+                
                         <?php display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$user_prop); ?>
                     </form>
                 </div>
@@ -310,4 +311,5 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
     </div><!--/.row-->
 
 <?php include("includes/footer.inc.php"); ?>
+
 <?php $mysqli->close(); ?>

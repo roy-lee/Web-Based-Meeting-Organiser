@@ -43,7 +43,9 @@ if(isset($_GET['id']))
             <div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
              <div class='row'>
                  <div class='col-lg-12 col-md-12'>
+
                     <div class='alert bg-red' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>Venue successfully deleted!</div>
+
                  </div>
              </div>
             </div>

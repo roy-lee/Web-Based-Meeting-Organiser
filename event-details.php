@@ -6,8 +6,6 @@ $id = @$_GET['id'];
 // Comment away placeholder ID. For testing purpose
 // $id = 1;
 
-
-
 $currentUserName = $_SESSION['username'];
 $sqlGetUser = "select userID from user where username = '$currentUserName'";
 $results = mysqli_query($conn,$sqlGetUser);
@@ -25,8 +23,6 @@ if ($row>0) {
 } else {
 	$joinStatus = 'notJoined';
 }
-
-
 
 $inner_join = "Select mt.*, usr.*, ven.* FROM meeting mt INNER JOIN venue ven on mt.venue_venueID = ven.VenueID LEFT JOIN user usr on mt.user_UserID = usr.userID where mt.meetingID='$id' and mt.eventStatus = '1'";
 
@@ -79,17 +75,19 @@ if(isset($_POST['update_butt']))
     $result = $mysqli->query($sql1);
     if ($result->num_rows > 0)
     {
+
         while($row = $result->fetch_assoc())
+
         {
             $venue_id = $row['venueID'];
         }
     }
 
-
 	// validate if need to//
 	$sql = "Update meeting set startTime='$start_time', endTime='$end_time', startDate='$start_date', endDate='$end_date', title='$title', description='$description', venue_venueID='$venue_id' where meetingID='$id'";
 	mysqli_query($conn,$sql);
 	header("location:event-details.php?id=$id");
+
 
 	echo "
 	<div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
@@ -106,7 +104,7 @@ if(isset($_POST['update_butt']))
 if(isset($_POST['editButt']))
 {
 	// edit the event, redirect user to the same page and edit it from there
-	header("location:/event-details.php?edit&id=$id");
+	header("location:./event-details.php?edit&id=$id");
 
 }
 if(isset($_POST['delButt']))

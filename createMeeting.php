@@ -22,11 +22,11 @@ function get_venues($mysqli)
 {
     $venues = array();
     $sql = "select * from venue;";
-
+    
     $result = $mysqli->query($sql);
     if ($result->num_rows > 0)
     {
-        while($row = $result->fetch_assoc())
+        while($row = $result->fetch_assoc()) 
         {
             $venues[$row['venue']] = $row['venueID'];
         }
@@ -39,9 +39,9 @@ function get_users($mysqli,$organiser)
 {
     $users_fullnames = array();
     $users_emails = array();
-
+    
     $sql = "select * from user where username != '".$organiser."';";
-
+    
     $result = $mysqli->query($sql);
     if ($result->num_rows >0)
     {
@@ -56,7 +56,7 @@ function get_users($mysqli,$organiser)
         $users_fullname[0] = "NIL";
         $users_emails[0] = "NIL";
     }
-
+    
     $results = array($users_fullnames,$users_emails);
     return $results;
 }
@@ -123,6 +123,7 @@ if (isset($_POST['meetingtitle']) && isset($_POST['description']) && isset($_POS
     if (empty(trim($_POST['meetingtitle'])))
     {
         $title_err = "Please enter a meeting title.";
+
     }
     else if (strlen($_POST['meetingtitle']) > 45)
     {
@@ -146,6 +147,7 @@ if (isset($_POST['meetingtitle']) && isset($_POST['description']) && isset($_POS
     {
         $description_err = "Meeting description must not exceed 1024 characters.";
     }
+
     else
     {
         $description = trim($_POST['description']);
@@ -225,6 +227,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                  * Counter Proposal
                 */
                 $sql = "INSERT INTO counter_proposal (startDate, endDate, startTime, endTime, status, user_userID, meeting_meetingID, meeting_venue_venueID, meeting_user_userID) VALUES (?,?,?,?,?,?,?,?,?);";
+
 
                 if ($stmt = $mysqli->prepare($sql))
                 {
@@ -385,4 +388,5 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
     </div><!--/.row-->
 
 <?php include("includes/footer.inc.php"); ?>
+
 <?php $mysqli->close(); ?>
