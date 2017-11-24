@@ -172,7 +172,8 @@ $currentUserID = $row['userID'];
                               ON m.meetingID = mp.meeting_meetingID
                               JOIN user AS u
                               ON u.userID = m.user_userID
-                              WHERE mp.user_userID = $currentUserID AND m.eventStatus = '1'";
+                              WHERE mp.user_userID = $currentUserID AND m.eventStatus = '1'
+                              ORDER BY m.startDate ASC";
 
           // $sqlJoinedEvents = "SELECT mt.*, usr.*, mp.* from meeting mt INNER JOIN
           //                     meeting_participants mp on mp.meeting_meetingID = mt.meetingID left JOIN user usr on usr.userID ='$currentUserID' where
