@@ -123,6 +123,7 @@ if (isset($_POST['meetingtitle']) && isset($_POST['description']) && isset($_POS
     if (empty(trim($_POST['meetingtitle'])))
     {
         $title_err = "Please enter a meeting title.";
+
     }
     else if (strlen($_POST['meetingtitle']) > 45)
     {
@@ -146,6 +147,7 @@ if (isset($_POST['meetingtitle']) && isset($_POST['description']) && isset($_POS
     {
         $description_err = "Meeting description must not exceed 1024 characters.";
     }
+
     else
     {
         $description = trim($_POST['description']);
@@ -225,6 +227,7 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                  * Counter Proposal
                 */
                 $sql = "INSERT INTO counter_proposal (startDate, endDate, startTime, endTime, status, user_userID, meeting_meetingID, meeting_venue_venueID, meeting_user_userID) VALUES (?,?,?,?,?,?,?,?,?);";
+
 
                 if ($stmt = $mysqli->prepare($sql))
                 {
@@ -358,14 +361,14 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
                                 <span class="help-block"><?php echo $description_err; ?></span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group <?php echo (!empty($participants_err)) ? 'has-error' : ''; ?>">
                             <label class="col-md-2 control-label" for="participants">Participants</label>
                             <div class="col-md-10">
                                 <select id="participants" name="participants[]" class="form-control" multiple>
                                     <?php display_fullnames($user_fullnames); ?>
                                 </select>
-                                
+
                                 <span class="help-block"><?php echo $participants_err; ?></span>
                                 <span class="help-block">Click and drag or Ctl + Click to conduct multiple selection</span>
                             </div>
@@ -386,10 +389,4 @@ function validateOnPost($mysqli,$venues,$userid,$user_fullnames,$user_emails,$or
 
 <?php include("includes/footer.inc.php"); ?>
 
-
-    <script src="js/moment.js"></script>
-    <script src="js/moment-with-locales.js"></script>
-    <script src="js/bootstrap-datetimepicker.js"></script>
-    <script src="js/jquery.validate.min.js"></script>
-    <script src="js/createMeeting.js"></script>
 <?php $mysqli->close(); ?>

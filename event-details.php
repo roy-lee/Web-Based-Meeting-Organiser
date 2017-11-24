@@ -6,6 +6,23 @@ $id = @$_GET['id'];
 // Comment away placeholder ID. For testing purpose
 // $id = 1;
 
+$currentUserName = $_SESSION['username'];
+$sqlGetUser = "select userID from user where username = '$currentUserName'";
+$results = mysqli_query($conn,$sqlGetUser);
+$row = mysqli_fetch_assoc($results);
+$currentUserID = $row['userID'];
+
+
+$joinStatus = '';
+// $sql = "SELECT TOP 1 * FROM meeting_participants WHERE meeting_meetingID = $id AND user_userID = $currentUserID";
+$sql = "SELECT 1 FROM `meeting_participants` WHERE meeting_meetingID = $id AND user_userID = $currentUserID";
+$result1 = mysqli_query($conn,$sql);
+$row = mysqli_num_rows($result1);
+if ($row>0) {
+	$joinStatus = 'joined';
+} else {
+	$joinStatus = 'notJoined';
+}
 
 $inner_join = "Select mt.*, usr.*, ven.* FROM meeting mt INNER JOIN venue ven on mt.venue_venueID = ven.VenueID LEFT JOIN user usr on mt.user_UserID = usr.userID where mt.meetingID='$id' and mt.eventStatus = '1'";
 
@@ -58,29 +75,29 @@ if(isset($_POST['update_butt']))
     $result = $mysqli->query($sql1);
     if ($result->num_rows > 0)
     {
-        while($row = $result->fetch_assoc()) 
+
+        while($row = $result->fetch_assoc())
+
         {
             $venue_id = $row['venueID'];
         }
     }
-    
 
 	// validate if need to//
 	$sql = "Update meeting set startTime='$start_time', endTime='$end_time', startDate='$start_date', endDate='$end_date', title='$title', description='$description', venue_venueID='$venue_id' where meetingID='$id'";
 	mysqli_query($conn,$sql);
-	// header("location:event-details.php?id=$id");
+	header("location:event-details.php?id=$id");
 
-}
-if(isset($_POST['joinButt']))
-{
-	$sql = "IINSERT INTO meeting_participants (meeting_meetingID,meeting_venue_venueID,meeting_user_userID,user_userID) VALUES($id,$venue,$userid,$username);";
-	if(mysqli_query($conn,$sql))
-	{
 
-		header('location:index.php');
-	}
-	// joins the event, redirect user to the same page
-	header("location:/event-details.php?edit&id=$id");
+	echo "
+	<div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
+		<div class='row'>
+				<div class='col-lg-12 col-md-12'>
+					 <div class='alert bg-teal' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>Successfully edited event!</div>
+				</div>
+		</div>
+	</div>
+	";
 
 }
 
@@ -99,6 +116,46 @@ if(isset($_POST['delButt']))
 
 		header('location:index.php');
 	}
+}
+
+if(isset($_POST['joinButt']))
+{
+
+	$sqlGetVenue = "select venueID from venue where venue = '$venue'";
+	$results = mysqli_query($conn,$sqlGetVenue);
+	$row = mysqli_fetch_assoc($results);
+	$currentVenueID = $row['venueID'];
+
+	$currentUserName = $_SESSION['username'];
+	$sqlGetUser = "select userID from user where username = '$currentUserName'";
+	$newResults = mysqli_query($conn,$sqlGetUser);
+	$row = mysqli_fetch_assoc($newResults);
+	$currentUserID = $row['userID'];
+
+	$sql = "INSERT INTO meeting_participants (meeting_meetingID,meeting_venue_venueID,meeting_user_userID,user_userID)
+					VALUES('$id','$currentVenueID','$userid','$currentUserID')";
+					echo $sql;
+	//echo "<script>alert($sql);</script>";
+	if(mysqli_query($conn,$sql))
+	{
+		// joins the event, redirect user to the same page
+		header("location:/event-details.php?id=$id");
+	}
+
+}
+
+
+if(isset($_POST['leaveButt']))
+{
+	$sql = "DELETE FROM meeting_participants
+					WHERE meeting_meetingID = $id AND user_userID = $currentUserID";
+	//echo "<script>alert($sql);</script>";
+	if(mysqli_query($conn,$sql))
+	{
+		// joins the event, redirect user to the same page
+		header("location:/event-details.php?id=$id");
+	}
+
 }
 
 if(isset($_GET['edit']) && !empty($_GET['id']))
@@ -255,21 +312,28 @@ else
                         <div><em class="fa fa-user">&nbsp;</em> <?php echo $username?></div>
                         <div><em class="fa fa-envelope-o">&nbsp;</em> <?php echo $email?></div>
 
-                        <hr>
-                        <h3>Join this Event</h3>
-                        <br>
-            						<form action='' method ='POST'>
-                          <input type="submit" value='Join' name='joinButt' class="btn btn-md btn-primary">
-                          <input type="submit" value='Leave' name='leaveButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
-            						</form>
+												<div class="participantMenu">
+	                        <hr>
+	                        <h3>Join this Event</h3>
+	                        <br>
+	            						<form action='' method ='POST'>
+	                          <input type="submit" value='Join' name='joinButt' class="btn btn-md btn-primary notJoined">
+	                          <input type="submit" value='Leave' name='leaveButt' id='delButt' class="btn btn-md btn-danger joinedEvent" onclick='return myFunction()'>
+														<a href="counter-proposal.php?id=<?php echo $id?>"><button type="button" name="counterProposal" class="btn btn-md btn-info">Counter Proposal</button></a>
+	            						</form>
+											</div>
 
+											<div class="organiserMenu">
                         <hr>
                         <h3>Amend this event</h3>
                         <br>
             						<form action='' method ='POST'>
-                          <input type="submit" value='Edit' name='editButt' class="btn btn-md btn-info">
+                          <input type="submit" value='Edit' name='editButt' class="btn btn-md btn-primary">
                           <input type="submit" value='Delete' name='delButt' id='delButt' class="btn btn-md btn-danger" onclick='return myFunction()'>
+													<a href="counter-proposal.php?id=<?php echo $id ?>"><button type="button" name="counterProposal" class="btn btn-md btn-info">Counter Proposal</button></a>
             						</form>
+											</div>
+
                         <br>
                     </div>
                 </div>
@@ -285,8 +349,8 @@ else
                     <div class="panel-body tabs">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#tab1" data-toggle="tab">Participants</a></li>
-                            <li><a href="#tab2" data-toggle="tab">Tab 2</a></li>
-                            <li><a href="#tab3" data-toggle="tab">Tab 3</a></li>
+                            <!-- <li><a href="#tab2" data-toggle="tab">Tab 2</a></li>
+                            <li><a href="#tab3" data-toggle="tab">Tab 3</a></li> -->
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane fade in active" id="tab1">
@@ -346,14 +410,14 @@ else
                                 </div>
                                 <!-- /.panel-->
                             </div>
-                            <div class="tab-pane fade" id="tab2">
+                            <!-- <div class="tab-pane fade" id="tab2">
                                 <h4>Tab 2</h4>
                                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget rutrum purus. Donec hendrerit ante ac metus sagittis elementum. Mauris feugiat nisl sit amet neque luctus, a tincidunt odio auctor.</p>
-                            </div>
-                            <div class="tab-pane fade" id="tab3">
+                            </div> -->
+                            <!-- <div class="tab-pane fade" id="tab3">
                                 <h4>Tab 3</h4>
                                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget rutrum purus. Donec hendrerit ante ac metus sagittis elementum. Mauris feugiat nisl sit amet neque luctus, a tincidunt odio auctor.</p>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -366,9 +430,15 @@ else
     </div>
 
 <?php } include("includes/footer.inc.php"); ?>
-    
-    <script src="js/moment.js"></script>
-    <script src="js/moment-with-locales.js"></script>
-    <script src="js/bootstrap-datetimepicker.js"></script>
-    <script src="js/jquery.validate.min.js"></script>
-    <script src="js/createMeeting.js"></script>
+
+<script>
+var joinStatus = "<?php echo $joinStatus ?>"; // "A string here"
+	$(document).ready(function() {
+		if (joinStatus == "notJoined") {
+			$('.joinedEvent').hide();
+		}
+		else if (joinStatus == "joined") {
+			$('.notJoined').hide();
+		}
+		});
+</script>

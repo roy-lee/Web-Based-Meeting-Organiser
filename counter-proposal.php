@@ -42,6 +42,7 @@ if (isset($_POST['meetingfrom']) && isset($_POST['meetingto']))
                 $end_time = $time;
             }
 
+
             $sql = "INSERT INTO counter_proposal (startDate, endDate, startTime, endTime, status, user_userID, meeting_meetingID, meeting_venue_venueID, meeting_user_userID) VALUES (?,?,?,?,?,?,?,?,?);";
 
             if ($stmt = $mysqli->prepare($sql))
@@ -66,7 +67,7 @@ if (isset($_POST['meetingfrom']) && isset($_POST['meetingto']))
         $datestart_err = "Please enter the start date & time";
         $dateend_err = "Please enter the end date & time";
     }
-} 
+}
 
 $proposals = get_all_proposals($mysqli,$meetingid);
 $user_prop = get_user_proposals($mysqli,$userid,$meetingid);
@@ -137,13 +138,14 @@ function getFullname($mysqli,$userid) {
 }
 
 function getMeetingInfo($mysqli,$meetingid)
+
 {
     $mtitle = "";
     $mdesc = "";
     $sql = "SELECT title, description FROM meeting where meetingID = $meetingid";
-    
+
     $result = $mysqli->query($sql);
-    
+
     if ($result->num_rows > 0)
     {
         while ($row = $result->fetch_assoc())
@@ -159,9 +161,9 @@ function getMeetingVenue($mysqli,$meetingid)
 {
     $mvenue = "";
     $sql = "select venue from venue where venueid = (select venue_venueid from meeting where meetingid = $meetingid);";
-    
+
     $result = $mysqli->query($sql);
-    
+
     if ($result->num_rows > 0)
     {
         while ($row = $result->fetch_assoc())
@@ -170,21 +172,22 @@ function getMeetingVenue($mysqli,$meetingid)
         }
     }
     return $mvenue;
-    
+
 }
 
 function get_all_proposals($mysqli,$meetingid)
 {
     $proposals = array();
-    
+
     $sql = "select * from counter_proposal where meeting_meetingID = $meetingid;";
-    
+
     $result = $mysqli->query($sql);
-    
+
     if ($result->num_rows > 0)
     {
         $count = 0;
-        while($row = $result->fetch_assoc()) 
+        while($row = $result->fetch_assoc())
+
         {
             $proposals[$count] = $row;
             $count += 1;
@@ -194,6 +197,7 @@ function get_all_proposals($mysqli,$meetingid)
 }
 
 function get_user_proposals($mysqli,$userid,$meetingid)
+
 {    
     $sql = "select count(*) from counter_proposal where user_userID = $userid and meeting_meetingid = $meetingid ;";
     
@@ -248,12 +252,9 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
     {
         echo "<label class='col-md-12 control-label'>No more counter proposals could be made for this meeting.</label>";
     }
-    
+
 }
 ?>
-<head>
-    <link href="css/pages/createMeeting.css" rel="stylesheet" >
-</head>
 
 <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
     <div class="row">
@@ -311,10 +312,4 @@ function display_all_proposals($mysqli,$proposals,$datestart_err,$dateend_err,$u
 
 <?php include("includes/footer.inc.php"); ?>
 
-
-    <script src="js/moment.js"></script>
-    <script src="js/moment-with-locales.js"></script>
-    <script src="js/bootstrap-datetimepicker.js"></script>
-    <script src="js/jquery.validate.min.js"></script>
-    <script src="js/createMeeting.js"></script>
 <?php $mysqli->close(); ?>

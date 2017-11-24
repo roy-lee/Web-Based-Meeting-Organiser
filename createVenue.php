@@ -43,7 +43,9 @@ if(isset($_GET['id']))
             <div class='col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main'>
              <div class='row'>
                  <div class='col-lg-12 col-md-12'>
-                    <div class='alert bg-teal' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>Venue successfully deleted!</div>
+
+                    <div class='alert bg-red' role='alert'><em class='fa fa-lg fa-warning'>&nbsp;</em>Venue successfully deleted!</div>
+
                  </div>
              </div>
             </div>
@@ -176,6 +178,7 @@ $stmt->close();
                         </div>
 
                         <div class="form-group">
+                          <label class="col-md-2 control-label" for=""></label>
                           <div class="col-md-10">
                                 <button type="submit" name="save" class="btn btn-primary btn-md">Submit</button>
                                 <button type="reset" class="btn btn-default btn-md">Reset</button>

@@ -11,7 +11,8 @@
 		<link href="css/datepicker3.css" rel="stylesheet">
 		<link href="css/bootstrap-table.css" rel="stylesheet">
 		<link href="css/styles.css" rel="stylesheet">
-		<link href="css/event-details.css" rel="stylesheet" >
+		<link href="css/pages/event-details.css" rel="stylesheet" >
+		<link href="css/pages/createMeeting.css" rel="stylesheet" >
 
 		<!--Custom Font-->
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
@@ -27,7 +28,7 @@
 		<?php
 		function numtomonth($month)
 		{
-			$month_array = ['Jan','Feb','Mar','April','May','June','July','Aug','Sep','Oct','Nov','Dec'];
+			$month_array = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 			$month = (int)substr($month,5,8);
 			$month = $month - 1;
 			return $month_array[$month];
